@@ -370,8 +370,8 @@
                                             <img src="assets/images/profile/profile-image.png" alt="" />
                                         </div>
                                         <div>
-                                            <h6 class="fw-500">Adam Joe</h6>
-                                            <p>Admin</p>
+                                            <h6 class="fw-500">{{ Auth::user()->name }}</h6>
+                                            <p>{{ Auth::user()->role->name }}</p> <!-- Menampilkan role pengguna -->
                                         </div>
                                     </div>
                                 </div>
@@ -383,9 +383,9 @@
                                             <img src="assets/images/profile/profile-image.png" alt="image">
                                         </div>
                                         <div class="content">
-                                            <h4 class="text-sm">Adam Joe</h4>
+                                            <h4 class="text-sm">{{ Auth::user()->name }}</h4>
                                             <a class="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white text-xs"
-                                                href="#">Email@gmail.com</a>
+                                            href="mailto:{{ Auth::user()->email }}">{{ Auth::user()->email }}</a>
                                         </div>
                                     </div>
                                 </li>
@@ -395,20 +395,25 @@
                                         <i class="lni lni-user"></i> View Profile
                                     </a>
                                 </li>
-                                <li>
+                                {{-- <li>
                                     <a href="#0">
                                         <i class="lni lni-alarm"></i> Notifications
                                     </a>
-                                </li>
-                                <li>
+                                </li> --}}
+                                {{-- <li>
                                     <a href="#0"> <i class="lni lni-inbox"></i> Messages </a>
-                                </li>
-                                <li>
+                                </li> --}}
+                                {{-- <li>
                                     <a href="#0"> <i class="lni lni-cog"></i> Settings </a>
-                                </li>
+                                </li> --}}
                                 <li class="divider"></li>
                                 <li>
-                                    <a href="#0"> <i class="lni lni-exit"></i> Sign Out </a>
+                                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <i class="lni lni-exit"></i> Sign Out
+                                    </a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
                                 </li>
                             </ul>
                         </div>
