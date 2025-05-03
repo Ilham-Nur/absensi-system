@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ asset('template/assets/css/materialdesignicons.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('template/assets/css/fullcalendar.css') }}" />
     <link rel="stylesheet" href="{{ asset('template/assets/css/main.css') }}" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 </head>
 
 <body>
@@ -35,6 +36,12 @@
     <script src="{{ asset('template/assets/js/world-merc.js') }}"></script>
     <script src="{{ asset('template/assets/js/polyfill.js') }}"></script>
     <script src="{{ asset('template/assets/js/main.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    @yield('script')
 
     <script>
         // ======== jvectormap activation
