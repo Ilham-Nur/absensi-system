@@ -45,6 +45,8 @@
 
     <script>
         // ======== jvectormap activation
+
+
         var markers = [{
                 name: "Egypt",
                 coords: [26.8206, 30.8025]
@@ -590,6 +592,9 @@
         });
         // =========== chart four end
     </script>
+
+
+
 </body>
 
 </html>
