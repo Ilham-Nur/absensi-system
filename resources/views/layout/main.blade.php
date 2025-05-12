@@ -27,7 +27,7 @@
                        </li>
                    </ul>
                </li>
-               <li class="nav-item nav-item-has-children">
+               {{-- <li class="nav-item nav-item-has-children">
                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2"
                        aria-controls="ddmenu_2" aria-expanded="false" aria-label="Toggle navigation">
                        <span class="icon">
@@ -49,7 +49,7 @@
                            <a href="blank-page.html"> Blank Page </a>
                        </li>
                    </ul>
-               </li>
+               </li> --}}
                <li class="nav-item">
                    <a href="{{ route('user.index') }}">
                        <span class="icon">
@@ -62,7 +62,7 @@
                        <span class="text">User</span>
                    </a>
                </li>
-               <li class="nav-item nav-item-has-children">
+               {{-- <li class="nav-item nav-item-has-children">
                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_3"
                        aria-controls="ddmenu_3" aria-expanded="false" aria-label="Toggle navigation">
                        <span class="icon">
@@ -84,11 +84,11 @@
                            <a href="signup.html"> Sign Up </a>
                        </li>
                    </ul>
-               </li>
-               <span class="divider">
+               </li> --}}
+               {{-- <span class="divider">
                    <hr />
-               </span>
-               <li class="nav-item nav-item-has-children">
+               </span> --}}
+               {{-- <li class="nav-item nav-item-has-children">
                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_4"
                        aria-controls="ddmenu_4" aria-expanded="false" aria-label="Toggle navigation">
                        <span class="icon">
@@ -120,8 +120,8 @@
                            <a href="typography.html"> Typography </a>
                        </li>
                    </ul>
-               </li>
-               <li class="nav-item nav-item-has-children">
+               </li> --}}
+               {{-- <li class="nav-item nav-item-has-children">
                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_55"
                        aria-controls="ddmenu_55" aria-expanded="false" aria-label="Toggle navigation">
                        <span class="icon">
@@ -149,8 +149,8 @@
                            <a href="mdi-icons.html"> MDI Icons </a>
                        </li>
                    </ul>
-               </li>
-               <li class="nav-item nav-item-has-children">
+               </li> --}}
+               {{-- <li class="nav-item nav-item-has-children">
                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_5"
                        aria-controls="ddmenu_5" aria-expanded="false" aria-label="Toggle navigation">
                        <span class="icon">
@@ -167,8 +167,8 @@
                            <a href="form-elements.html"> From Elements </a>
                        </li>
                    </ul>
-               </li>
-               <li class="nav-item">
+               </li> --}}
+               {{-- <li class="nav-item">
                    <a href="tables.html">
                        <span class="icon">
                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -183,12 +183,12 @@
                        </span>
                        <span class="text">Tables</span>
                    </a>
-               </li>
-               <span class="divider">
+               </li> --}}
+               {{-- <span class="divider">
                    <hr />
-               </span>
+               </span> --}}
 
-               <li class="nav-item">
+               {{-- <li class="nav-item">
                    <a href="notification.html">
                        <span class="icon">
                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -205,7 +205,7 @@
                        </span>
                        <span class="text">Notifications</span>
                    </a>
-               </li>
+               </li> --}}
 
                <li class="nav-item">
                    <a href="{{ route('roles.index') }}">
