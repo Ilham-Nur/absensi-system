@@ -34,4 +34,12 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
+
+    Route::prefix('role')->group(function() {
+        Route::get('/', [RoleController::class, 'index'])->name('roles.index');
+        Route::get('/list', [RoleController::class, 'list'])->name('roles.list');
+        Route::post('/store', [RoleController::class, 'store'])->name('roles.store');
+        Route::post('/edit/{id}', [RoleController::class, 'update'])->name('roles.update');
+        Route::delete('/delete/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
+    });
 });

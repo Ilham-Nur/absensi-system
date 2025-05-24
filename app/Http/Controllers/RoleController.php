@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
 
 class RoleController extends Controller
 {
@@ -15,11 +16,10 @@ class RoleController extends Controller
         return view('role.indexrole');
     }
 
-    public function list()
+    public function list(Request $request)
     {
-        $roles = Role::select('id', 'name')->get();
-
-        return response()->json(['data' => $roles]);
+        $roles = Role::select('id', 'name');
+        return DataTableses::of($roles)->make(true);
     }
 
     public function store(Request $request)
