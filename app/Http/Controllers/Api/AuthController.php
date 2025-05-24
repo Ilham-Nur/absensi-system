@@ -9,9 +9,8 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+  public function login(Request $request)
     {
-
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -19,6 +18,7 @@ class AuthController extends Controller
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
+                'success' => false,
                 'message' => 'Unauthorized'
             ], 401);
         }
@@ -26,8 +26,12 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         return response()->json([
-            'token' => $user->createToken('mobile-token')->plainTextToken,
-            'user' => $user,
+            'success' => true,
+            'message' => 'Login successful',
+            'data' => [
+                'token' => $user->createToken('mobile-token')->plainTextToken,
+                'user' => $user,
+            ]
         ]);
     }
 
@@ -36,8 +40,9 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logged out'
-        ]);
+            'success' => true,
+            'message' => 'Logout successful'
+        ], 200);
     }
 }
 
