@@ -19,7 +19,7 @@ class RoleController extends Controller
     public function list(Request $request)
     {
         $roles = Role::select('id', 'name');
-        return DataTableses::of($roles)->make(true);
+        return DataTables::of($roles)->make(true);
     }
 
     public function store(Request $request)
