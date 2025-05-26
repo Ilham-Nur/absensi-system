@@ -120,7 +120,7 @@
                         </div>
                     </div>
                     <!-- end col -->
-                    <div class="col-md-6">php
+                    <div class="col-md-6">
                         <div class="breadcrumb-wrapper">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
@@ -299,7 +299,7 @@
                 }
             });
         });
-        
+
         // Tampilkan Modal Edit
         $(".btnEditUser").click(function () {
             let id = $(this).data("id");
