@@ -27,17 +27,17 @@ class AuthController extends Controller
             ], 401);
         }
 
-        if (is_null($user->device_id)) {
-            $user->device_id = $request->device_id;
-            $user->save();
-        } else {
-            if ($user->device_id !== $request->device_id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Akun ini sudah login di perangkat lain'
-                ], 403);
-            }
-        }
+        // if (is_null($user->device_id)) {
+        //     $user->device_id = $request->device_id;
+        //     $user->save();
+        // } else {
+        //     if ($user->device_id !== $request->device_id) {
+        //         return response()->json([
+        //             'success' => false,
+        //             'message' => 'Akun ini sudah login di perangkat lain'
+        //         ], 403);
+        //     }
+        // }
 
         $tokenName = 'mobile-token-' . $request->device_id;
         $user->tokens()->where('name', $tokenName)->delete(); // Optional: hapus token lama

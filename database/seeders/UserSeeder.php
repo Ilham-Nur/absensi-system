@@ -30,6 +30,30 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password123'),
             'role_id' => $userRole->id,
         ]);
+
+        // Menambahkan user Tyo
+        User::create([
+            'name' => 'Tyo',
+            'email' => 'tyo@example.com',
+            'password' => Hash::make('password123'),
+            'role_id' => $userRole->id,
+        ]);
+
+        // Menambahkan user Riyan
+        User::create([
+            'name' => 'Riyan',
+            'email' => 'riyan@example.com',
+            'password' => Hash::make('password123'),
+            'role_id' => $userRole->id,
+        ]);
+
+        // Menambahkan user Ilham
+        User::create([
+            'name' => 'Ilham',
+            'email' => 'ilham@example.com',
+            'password' => Hash::make('password123'),
+            'role_id' => $userRole->id,
+        ]);
     }
 }
 
