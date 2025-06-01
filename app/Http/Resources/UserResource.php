@@ -14,10 +14,11 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'uuid'=> $this->uuid,
             'role_id' => $this->role_id,
             'name' => $this->name,
             'email' => $this->email,
-            'must_change_password' => $this->must_change_password,
+            'must_change_password' => $this->must_change_password
             // Jika kamu perlu kirim info tambahan seperti foto profil, tambahkan di sini
         ];
     }

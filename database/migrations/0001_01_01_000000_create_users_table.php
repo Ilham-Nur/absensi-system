@@ -20,6 +20,7 @@ return new class extends Migration
 
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('role_id')->constrained()->onDelete('cascade'); // FK ke roles.id
             $table->string('name');
             $table->string('email')->unique();
