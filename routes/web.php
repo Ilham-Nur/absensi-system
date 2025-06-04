@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ScannerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WaktuController;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +36,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/delete/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
     });
 
-    //waktu 
+    //waktu
     Route::prefix('waktu')->middleware(['auth'])->group(function () {
         Route::get('/', [WaktuController::class, 'index'])->name('waktu.index');
         Route::post('/store', [WaktuController::class, 'store'])->name('waktu.store');
@@ -45,3 +46,6 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
+
+//scanner
+Route::get('/scanner', [ScannerController::class, 'index'])->name('scanner.index');
