@@ -179,14 +179,36 @@
                 (decodedText, decodedResult) => {
                     resultInput.value = decodedText;
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Kode berhasil dipindai.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+                    // Kirim ke backend via AJAX
+                    fetch("{{ route('scanner.scan') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                result: decodedText
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            Swal.fire({
+                                icon: data.status === 'success' ? 'success' : 'error',
+                                title: data.message,
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Terjadi kesalahan',
+                                text: 'Gagal mengirim data.',
+                            });
+                        });
 
+                    // Matikan kamera
                     html5QrCode.stop().then(() => {
                         scannerStarted = false;
                         readerDiv.style.display = 'none';

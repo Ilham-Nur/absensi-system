@@ -64,4 +64,14 @@ class User extends Authenticatable
             $user->uuid = (string) Str::uuid();
         });
     }
+
+    public function presensis()
+    {
+        return $this->hasMany(Presensi::class);
+    }
+
+    public function absensis()
+    {
+        return $this->hasMany(Absensi::class);
+    }
 }

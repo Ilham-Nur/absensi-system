@@ -49,3 +49,4 @@ Route::middleware(['auth'])->group(function () {
 
 //scanner
 Route::get('/scanner', [ScannerController::class, 'index'])->name('scanner.index');
+Route::post('/scanner/scan', [ScannerController::class, 'scan'])->name('scanner.scan');
