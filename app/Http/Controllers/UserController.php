@@ -11,9 +11,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Ambil semua user beserta relasi role
+
         $users = User::with('role')->get();
-        // Ambil semua role untuk dropdown
+
         $roles = Role::all();
         return view('user.indexuser', compact('users', 'roles'));
     }
@@ -24,7 +24,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed', // Validasi konfirmasi password
+            'password' => 'required|min:6|confirmed',
             'role_id' => 'required|exists:roles,id',
         ]);
 
@@ -34,6 +34,7 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
+
                 'role_id' => $request->role_id,
             ]);
 
@@ -43,32 +44,51 @@ class UserController extends Controller
         }
     }
 
+    public function resetPassword($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+
+            // Setel ulang password ke 'password' (atau sesuaikan sesuai kebutuhan)
+            $user->update(['password' => bcrypt('password123')]);
+
+            return response()->json(['success' => true, 'message' => 'Password berhasil direset.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal mereset password!'], 500);
+        }
+    }
+
     public function edit($id)
     {
-        // Ambil user berdasarkan ID
         $user = User::findOrFail($id);
-        return view('user.edituser', compact('user'));
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role_id' => $user->role_id,
+        ]);
+
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'nullable|min:6|confirmed', // Validasi konfirmasi password
             'role_id' => 'required|exists:roles,id',
         ]);
-    
-        $user = User::findOrFail($id);
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password ? bcrypt($request->password) : $user->password,
-            'role_id' => $request->role_id,
-        ]);
-    
-        return response()->json(['success' => true]);
+        dd($request->all());
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->role_id = $validated['role_id'];
+        $user->save();
+
+        return response()->json(['message' => 'User berhasil diperbarui.']);
     }
+
 
     public function destroy($id)
     {

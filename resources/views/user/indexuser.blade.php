@@ -12,13 +12,13 @@
                 </div>
                 <div class="modal-body">
                     <form id="formUser">
+                        @csrf
                         <input type="hidden" id="userId">
                         <div class="form-group mb-3">
                             <label for="nama">Nama</label>
                             <input type="text" class="form-control" id="nama" placeholder="Masukan Nama" name="name"
                                 required>
                         </div>
-
                         <div class="form-group mb-3">
                             <label for="email">Email</label>
                             <input type="email" class="form-control" id="email" placeholder="Masukan Email" name="email"
@@ -38,7 +38,7 @@
 
                         <div class="form-group mb-3">
                             <label for="role">Role</label>
-                            <select class="form-control" id="role" name="role" required>
+                            <select class="form-control" id="role" name="role_id" required>
                                 <option value="" disabled selected>Pilih Role</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -46,7 +46,8 @@
                             </select>
                         </div>
 
-                        <div class="d-grid">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Simpan</button>
                         </div>
                     </form>
@@ -65,6 +66,8 @@
                 </div>
                 <div class="modal-body">
                     <form id="formEditUser">
+                      @csrf
+                        @method('PUT')
                         <input type="hidden" id="editUserId">
                         <div class="form-group mb-3">
                             <label for="editNama">Nama</label>
@@ -77,10 +80,9 @@
                             <input type="email" class="form-control" id="editEmail" placeholder="Masukan Email" name="email"
                                 required>
                         </div>
-
                         <div class="form-group mb-3">
                             <label for="editRole">Role</label>
-                            <select class="form-control" id="editRole" name="role" required>
+                            <select class="form-control" id="editRole" name="role_id" required>
                                 <option value="" disabled selected>Pilih Role</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -88,20 +90,9 @@
                             </select>
                         </div>
 
-                        <div class="form-group mb-3">
-                            <label for="editPassword">Password (Opsional)</label>
-                            <input type="password" class="form-control" id="editPassword" placeholder="Masukan Password"
-                                name="password">
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="editPasswordConfirmation">Konfirmasi Password</label>
-                            <input type="password" class="form-control" id="editPasswordConfirmation"
-                                placeholder="Konfirmasi Password" name="password_confirmation">
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -141,9 +132,8 @@
                     <div class="card-style mb-30">
                         <div class="d-flex align-items-center mb-3">
                             <h6 class="mb-0">List User</h6>
-                            <button type="button" class="main-btn primary-btn btn-hover ms-auto"
-                                style="width: 20px; height: 20px;" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#modalUser">
+                            <button id="btnUser" type="button" class="main-btn primary-btn btn-hover ms-auto"
+                                data-bs-toggle="modal" data-bs-target="#modalUser">
                                 Tambah User
                             </button>
                         </div>
@@ -171,6 +161,8 @@
                                                         data-id="{{ $user->id }}">Edit</button>
                                                     <button class="btn btn-sm btn-danger btnDeleteUser"
                                                         data-id="{{ $user->id }}">Delete</button>
+                                                    <button class="btn btn-sm btn-secondary btnResetPassword"
+                                                        data-id="{{ $user->id }}">Reset Password</button>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -187,7 +179,7 @@
 
 @section('script')
     <script>
-        // Konfigurasi DataTable
+
         $(document).ready(function () {
             $('#userTable').DataTable({
                 "paging": true,
@@ -199,15 +191,16 @@
             });
         });
 
-        // Tampilkan Modal Tambah
+
         $("#btnUser").click(function () {
             $("#modalLabel").text("Tambah User");
             $("#formUser")[0].reset();
             $("#userId").val("");
             $("#modalUser").modal("show");
+
         });
 
-        // Simpan Data (Tambah)
+
         $("#formUser").submit(function (e) {
             e.preventDefault();
             let form = $(this);
@@ -223,41 +216,45 @@
                     $(form).find('button[type="submit"]').prop('disabled', true).html(
                         '<i class="fas fa-spinner fa-spin"></i> Mengupdate...');
                 },
-
                 success: function (response) {
-                    Swal.fire({
-                        icon: "success",
-                        title: id ? "Berhasil Diperbarui!" : "Berhasil Ditambahkan!",
-                        text: "Data user berhasil disimpan.",
-                        showConfirmButton: true,
-                        confirmButtonText: "OK"
-                    }).then(() => {
-                        location.reload();
-                    });
+                    if (response.status) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            $('#modalUser').modal('hide');
+                            form[0].reset();
+                            table.ajax.reload(null, false);
+                        });
+                    }
                 },
                 error: function (xhr) {
-                    let errorMessage = "Terjadi kesalahan.";
-                    if (xhr.responseJSON && xhr.responseJSON.errors) {
-                        errorMessage = Object.values(xhr.responseJSON.errors)
-                            .map((error) => error.join(", "))
-                            .join("\n");
+                    let errors = xhr.responseJSON?.errors;
+                    if (errors) {
+                        $.each(errors, function (prefix, val) {
+                            $(form).find('span.' + prefix + '_error').text(val[0]);
+                        });
+                    } else {
+                        let msg = xhr.responseJSON?.message ||
+                            'Terjadi kesalahan saat menyimpan role.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: msg
+                        });
                     }
-
-                    Swal.fire({
-                        icon: "error",
-                        title: "Gagal!",
-                        text: errorMessage,
-                        showConfirmButton: true,
-                        confirmButtonText: "OK"
-                    });
                 },
                 complete: function () {
-                    $submitBtn.prop("disabled", false);
+                    $(form).find('button[type="submit"]').prop('disabled', false).html(
+                        'Simpan');
                 }
             });
         });
 
-        // Hapus Data dengan SweetAlert2
+
         $(".btnDeleteUser").click(function () {
             let id = $(this).data("id");
 
@@ -273,7 +270,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/user/delete/`,
+                        url: `/user/delete/${id}`,
                         type: "GET",
                         data: {
                             _token: "{{ csrf_token() }}"
@@ -300,34 +297,34 @@
             });
         });
 
-        // Tampilkan Modal Edit
-        $(".btnEditUser").click(function () {
-            let id = $(this).data("id");
+      
+        $(document).on('click', '.btnEditUser', function () {
+            
+            let id = $("#editUserId").val();
+            let name = $("#editNama").val();
+            let email = $("#editEmail").val();
+            let role = $("#editRole").val();
 
             $.ajax({
-                url: `/user/edit/${id}`,
-                type: "GET",
+                url: `/user/listdata/${id}`,
+                type: 'GET',
                 success: function (response) {
-                    $("#editUserId").val(response.id);
-                    $("#editNama").val(response.name);
-                    $("#editEmail").val(response.email);
-                    $("#editRole").val(response.role_id);
-                    $("#editPassword").val("");
-                    $("#editPasswordConfirmation").val("");
-
-                    $("#modalEditUser").modal("show");
+                    $('#editUserId').val(response.id);
+                    $('#editNama').val(response.name);
+                    $('#editEmail').val(response.email);
+                    $('#editRole').val(response.role_id);
+                    $('#modalEditUser').modal('show');
                 },
                 error: function (xhr) {
                     Swal.fire({
                         icon: "error",
                         title: "Gagal!",
-                        text: xhr.responseJSON?.message || "Terjadi kesalahan."
+                        text: "Tidak bisa mengambil data user."
                     });
                 }
             });
         });
 
-        // Simpan Perubahan
         $("#formEditUser").submit(function (e) {
             e.preventDefault();
 
@@ -335,9 +332,6 @@
             let name = $("#editNama").val();
             let email = $("#editEmail").val();
             let role = $("#editRole").val();
-            let password = $("#editPassword").val();
-            let password_confirmation = $("#editPasswordConfirmation").val();
-
             $.ajax({
                 url: `/user/update/${id}`,
                 type: "POST",
@@ -345,8 +339,6 @@
                     name: name,
                     email: email,
                     role_id: role,
-                    password: password,
-                    password_confirmation: password_confirmation,
                     _token: "{{ csrf_token() }}"
                 },
                 success: function (response) {
@@ -367,7 +359,6 @@
                             .map((error) => error.join(", "))
                             .join("\n");
                     }
-
                     Swal.fire({
                         icon: "error",
                         title: "Gagal!",
@@ -380,42 +371,48 @@
         });
 
 
-        // Tampilkan Modal Delete
-        $(".btnDeleteUser").click(function () {
+        // Reset Password
+        $(".btnResetPassword").click(function () {
             let id = $(this).data("id");
-            $("#deleteUserId").val(id);
-            $("#modalDeleteUser").modal("show");
-        });
 
-        // Konfirmasi Hapus
-        $("#confirmDeleteUser").click(function () {
-            let id = $("#deleteUserId").val();
-
-            $.ajax({
-                url: `/user/delete/${id}`,
-                type: "GET",
-                data: {
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function (response) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Berhasil Dihapus!",
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        location.reload();
-                    });
-                },
-                error: function (xhr) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Gagal!",
-                        text: xhr.responseJSON?.message || "Terjadi kesalahan."
+            Swal.fire({
+                title: "Yakin ingin mereset password?",
+                text: "Password akan direset ke default!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, Reset!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/user/reset-password/${id}`,
+                        type: "GET",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil Direset!",
+                                text: "Password berhasil direset ke default.",
+                                showConfirmButton: true,
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Gagal!",
+                                text: xhr.responseJSON?.message || "Terjadi kesalahan."
+                            });
+                        }
                     });
                 }
             });
         });
-
     </script>
 @endsection

@@ -21,11 +21,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.show');
 
     // user
-    route::get('/user', [UserController::class, 'index'])->name('user.index');
+    Route::get('/user', [UserController::class, 'index'])->name('user.index');
     Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
-    route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('user.edit');
+    Route::get('/user/listdata/{id}', [UserController::class, 'edit'])->name('user.edit');
     Route::post('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
-    route::get('/user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
+    Route::get('/user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
+    Route::post('/user/reset-password/{id}', [UserController::class, 'resetPassword'])->name('user.resetPassword');
 
     // role
     Route::prefix('role')->group(function () {
