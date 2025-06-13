@@ -71,12 +71,12 @@
                                 </div>
 
                                 <!-- Remember me -->
-                                <div class="form-check checkbox-style mb-30">
+                                {{-- <div class="form-check checkbox-style mb-30">
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember">
                                     <label class="form-check-label" for="remember">
                                         Remember Me
                                     </label>
-                                </div>
+                                </div> --}}
 
                                 <!-- Submit button -->
                                 <div class="button-group d-flex justify-content-center flex-wrap">
@@ -88,7 +88,7 @@
                             </form>
 
                             <!-- Footer -->
-                            <div class="singin-option pt-40">
+                            {{-- <div class="singin-option pt-40">
                                 <p class="text-sm text-medium text-center text-gray">Don't have an account?</p>
                                 <p class="text-sm text-medium text-dark text-center">
                                     <a href="#">Create an account</a>
@@ -98,7 +98,7 @@
                                         Forgot Password?
                                     </a>
                                 </div>
-                            </div>
+                            </div> --}}
 
                         </div>
                     </div>

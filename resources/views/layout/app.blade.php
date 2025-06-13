@@ -44,6 +44,29 @@
     @yield('script')
 
     <script>
+        $(document).ready(function() {
+            $('#logout-link').on('click', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Yakin ingin Sign Out?',
+                    text: 'Kamu akan keluar dari sesi ini.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Sign Out!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#logout-form').submit();
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
         // ======== jvectormap activation
 
 
