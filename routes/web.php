@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('waktu')->middleware(['auth'])->group(function () {
         Route::get('/', [WaktuController::class, 'index'])->name('waktu.index');
         Route::post('/store', [WaktuController::class, 'store'])->name('waktu.store');
+        Route::get('/edit/{id}', [WaktuController::class, 'edit'])->name('waktu.edit');
         Route::post('/update/{id}', [WaktuController::class, 'update'])->name('waktu.update');
         Route::delete('/delete/{id}', [WaktuController::class, 'destroy'])->name('waktu.delete');
         Route::get('/list', [WaktuController::class, 'list'])->name('waktu.list');
