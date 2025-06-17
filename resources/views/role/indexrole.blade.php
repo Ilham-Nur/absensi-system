@@ -41,9 +41,8 @@
                 </div>
                 <form id="formEditRole">
                     @csrf
-                    @method('PUT')
                     <div class="modal-body">
-                        <input type="text" name="id" id="editRoleId">
+                        <input type="text" name="id" id="editRoleId" hidden>
                         <div class="mb-3">
                             <label for="editNamaRole" class="form-label">Nama Role</label>
                             <input type="text" name="name" id="editNamaRole" class="form-control" required>
@@ -134,7 +133,6 @@
 @section('script')
     <script>
         $(document).ready(function() {
-
             let table = $('#role-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -244,7 +242,7 @@
                 let formData = form.serialize();
 
                 $.ajax({
-                    url: "/role/edit/" + roleId,
+                    url: "/role/update/" + roleId,
                     type: 'POST',
                     data: formData,
                     dataType: 'json',
