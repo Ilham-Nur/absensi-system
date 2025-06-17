@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Status;
 use Illuminate\Http\Request;
 use App\Models\Waktu;
 use Yajra\DataTables\Facades\DataTables;
@@ -10,47 +11,73 @@ class WaktuController extends Controller
 {
     public function index()
     {
-
         $waktus = Waktu::all();
-        return view('waktu.index', compact('waktus'));
+        $statuses = Status::all();
+        return view('waktu.index', compact('waktus', 'statuses'));
     }
+
     public function list(Request $request)
     {
         if ($request->ajax()) {
-            $data = Waktu::select(['id', 'waktu']);
+            $data = Waktu::with('status')
+                ->select(['id', 'status_id', 'starttime', 'endtime']);
+
             return DataTables::of($data)->make(true);
         }
     }
     public function store(Request $request)
     {
+        // Validasi data yang dikirim dari frontend
         $request->validate([
-            'waktu' => 'required|date_format:H:i',
+            'status_id' => 'required|exists:status,id',
+            'starttime' => 'required|date_format:H:i',
+            'endtime' => 'required|date_format:H:i|after:starttime',
         ]);
 
         try {
+            // Simpan data ke tabel waktu
             Waktu::create([
-                'waktu' => $request->waktu,
+                'status_id' => $request->status_id,
+                'starttime' => $request->starttime,
+                'endtime'   => $request->endtime,
             ]);
+
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Gagal menyimpan waktu!'], 500);
+            return response()->json([
+                'message' => 'Gagal menyimpan waktu!',
+                'error'   => $e->getMessage(),
+            ], 500);
         }
+    }
+
+    public function edit($id)
+    {
+        $waktu = Waktu::findOrFail($id);
+        return response()->json($waktu);
     }
 
     public function update(Request $request, $id)
     {
+
+        // dd($request->all());
         $request->validate([
-            'waktu' => 'required|date_format:H:i',
+            'status_id' => 'required|exists:status,id',
+            'starttime' => 'required|date_format:H:i',
+            'endtime' => 'required|date_format:H:i|after:starttime',
         ]);
 
         try {
             $waktu = Waktu::findOrFail($id);
             $waktu->update([
-                'waktu' => $request->waktu,
+                'status_id' => $request->status_id,
+                'starttime' => $request->starttime,
+                'endtime'   => $request->endtime,
             ]);
+
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Gagal memperbarui waktu!'], 500);
+            return response()->json(['message' => 'Gagal mengupdate waktu'], 500);
         }
     }
 

@@ -12,7 +12,10 @@ return new class extends Migration {
     {
         Schema::create('waktus', function (Blueprint $table) {
             $table->id();
-            $table->time('waktu');
+            $table->unsignedBigInteger('status_id');
+            $table->foreign('status_id')->references('id')->on('status')->onDelete('cascade');
+            $table->time('starttime');
+            $table->time('endtime');
             $table->timestamps();
         });
     }
