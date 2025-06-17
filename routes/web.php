@@ -24,7 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('user.index');
         Route::post('/store', [UserController::class, 'store'])->name('user.store');
-        Route::post('/list', [UserController::class, 'list'])->name('user.list');
+        Route::get('/list', [UserController::class, 'list'])->name('user.list');
         Route::put('/update/{id}', [UserController::class, 'update'])->name('user.update');
         Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
         Route::post('/reset-password/{id}', [UserController::class, 'resetPassword'])->name('user.resetPassword');
