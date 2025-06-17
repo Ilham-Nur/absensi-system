@@ -21,19 +21,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.show');
 
     // user
-    Route::get('/user', [UserController::class, 'index'])->name('user.index');
-    Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
-    Route::get('/user/listdata/{id}', [UserController::class, 'edit'])->name('user.edit');
-    Route::post('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
-    Route::get('/user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
-    Route::post('/user/reset-password/{id}', [UserController::class, 'resetPassword'])->name('user.resetPassword');
+    Route::prefix('user')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('user.index');
+        Route::post('/store', [UserController::class, 'store'])->name('user.store');
+        Route::post('/list', [UserController::class, 'list'])->name('user.list');
+        Route::put('/update/{id}', [UserController::class, 'update'])->name('user.update');
+        Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
+        Route::post('/reset-password/{id}', [UserController::class, 'resetPassword'])->name('user.resetPassword');
+    });
 
     // role
     Route::prefix('role')->group(function () {
         Route::get('/', [RoleController::class, 'index'])->name('roles.index');
         Route::get('/list', [RoleController::class, 'list'])->name('roles.list');
         Route::post('/store', [RoleController::class, 'store'])->name('roles.store');
-        Route::post('/edit/{id}', [RoleController::class, 'update'])->name('roles.update');
+        Route::post('/update/{id}', [RoleController::class, 'update'])->name('roles.update');
         Route::delete('/delete/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
     });
 

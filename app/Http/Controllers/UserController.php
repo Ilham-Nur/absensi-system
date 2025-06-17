@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
@@ -89,7 +90,13 @@ class UserController extends Controller
         return response()->json(['message' => 'User berhasil diperbarui.']);
     }
 
-
+    public function list(Request $request)
+    {
+        if ($request->ajax()) {
+            $users = User::with('role')->select(['id', 'name', 'email', 'role_id']);
+            return DataTables::of($users)->make(true);
+        }
+    }
     public function destroy($id)
     {
         try {

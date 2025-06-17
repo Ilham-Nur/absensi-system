@@ -2,7 +2,6 @@
 @section('title', 'User')
 
 @section('content')
-    <!-- Modal Tambah -->
     <div class="modal fade" id="modalUser" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -56,7 +55,6 @@
         </div>
     </div>
 
-    <!-- Modal Edit -->
     <div class="modal fade" id="modalEditUser" tabindex="-1" aria-labelledby="modalEditLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -66,15 +64,13 @@
                 </div>
                 <div class="modal-body">
                     <form id="formEditUser">
-                      @csrf
-                        @method('PUT')
-                        <input type="hidden" id="editUserId">
+                        @csrf
+                        <input type="hidden" id="editUserId" name="id"> {{-- Add name attribute for form submission --}}
                         <div class="form-group mb-3">
                             <label for="editNama">Nama</label>
                             <input type="text" class="form-control" id="editNama" placeholder="Masukan Nama" name="name"
                                 required>
                         </div>
-
                         <div class="form-group mb-3">
                             <label for="editEmail">Email</label>
                             <input type="email" class="form-control" id="editEmail" placeholder="Masukan Email" name="email"
@@ -102,7 +98,6 @@
 
     <section class="section">
         <div class="container-fluid">
-            <!-- ========== title-wrapper start ========== -->
             <div class="title-wrapper pt-30">
                 <div class="row align-items-center">
                     <div class="col-md-6">
@@ -110,22 +105,20 @@
                             <h2>User</h2>
                         </div>
                     </div>
-                    <!-- end col -->
                     <div class="col-md-6">
                         <div class="breadcrumb-wrapper">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item">
-                                        <a href="#">Role</a>
+                                        <a href="#">User Management</a> {{-- Changed to be more descriptive --}}
                                     </li>
+                                    <li class="breadcrumb-item active" aria-current="page">User</li>
                                 </ol>
                             </nav>
                         </div>
                     </div>
-                    <!-- end col -->
+                    </div>
                 </div>
-                <!-- end row -->
-            </div>
 
             <div class="row">
                 <div class="col-lg-12">
@@ -150,22 +143,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($users as $user)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $user->name }}</td>
-                                                <td>{{ $user->email }}</td>
-                                                <td>{{ $user->role->name }}</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-primary btnEditUser"
-                                                        data-id="{{ $user->id }}">Edit</button>
-                                                    <button class="btn btn-sm btn-danger btnDeleteUser"
-                                                        data-id="{{ $user->id }}">Delete</button>
-                                                    <button class="btn btn-sm btn-secondary btnResetPassword"
-                                                        data-id="{{ $user->id }}">Reset Password</button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
+                                        {{-- DataTables will populate this tbody via AJAX --}}
                                     </tbody>
                                 </table>
                             </div>
@@ -179,239 +157,298 @@
 
 @section('script')
     <script>
-
         $(document).ready(function () {
-            $('#userTable').DataTable({
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false
-            });
-        });
-
-
-        $("#btnUser").click(function () {
-            $("#modalLabel").text("Tambah User");
-            $("#formUser")[0].reset();
-            $("#userId").val("");
-            $("#modalUser").modal("show");
-
-        });
-
-
-        $("#formUser").submit(function (e) {
-            e.preventDefault();
-            let form = $(this);
-            let formData = form.serialize();
-
-            $.ajax({
-                url: "{{ route('user.store') }}",
-                type: 'POST',
-                data: formData,
-                dataType: 'json',
-                beforeSend: function () {
-                    $(form).find('span.error-text').text('');
-                    $(form).find('button[type="submit"]').prop('disabled', true).html(
-                        '<i class="fas fa-spinner fa-spin"></i> Mengupdate...');
-                },
-                success: function (response) {
-                    if (response.status) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil!',
-                            text: response.message,
-                            timer: 2000,
-                            showConfirmButton: false
-                        }).then(() => {
-                            $('#modalUser').modal('hide');
-                            form[0].reset();
-                            table.ajax.reload(null, false);
-                        });
+            let table = $('#userTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('user.list') }}",
+                columns: [
+                    {
+                        data: null,
+                        name: 'No',
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'email',
+                        name: 'email'
+                    },
+                    {
+                        data: 'role.name', // Assuming 'role' is a relationship in your User model
+                        name: 'role.name',
+                        orderable: false, // Role name might not be directly sortable on the database side
+                        searchable: false // If you want to search by role name, you might need custom server-side logic
+                    },
+                    {
+                        data: 'id',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-primary btnEditUser" data-id="${row.id}">Edit</button>
+                                <button class="btn btn-sm btn-danger btnDeleteUser" data-id="${row.id}">Delete</button>
+                                <button class="btn btn-sm btn-secondary btnResetPassword" data-id="${row.id}">Reset Password</button>
+                            `;
+                        }
                     }
-                },
-                error: function (xhr) {
-                    let errors = xhr.responseJSON?.errors;
-                    if (errors) {
-                        $.each(errors, function (prefix, val) {
-                            $(form).find('span.' + prefix + '_error').text(val[0]);
-                        });
-                    } else {
-                        let msg = xhr.responseJSON?.message ||
-                            'Terjadi kesalahan saat menyimpan role.';
+                ]
+            });
+
+            $("#btnUser").on("click", function () {
+                $("#modalLabel").text("Tambah User");
+                $("#formUser")[0].reset();
+                $("#userId").val('');
+                $('#password').prop('required', true);
+                $('#password_confirmation').prop('required', true);
+                $("#modalUser").modal("show");
+            });
+
+            $("#formUser").on("submit", function (e) {
+                e.preventDefault();
+                let form = $(this);
+                let formData = form.serialize();
+
+                $.ajax({
+                    url: "{{ route('user.store') }}",
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    beforeSend: function () {
+
+                        form.find('.invalid-feedback').remove();
+                        form.find('.form-control').removeClass('is-invalid');
+
+                        form.find('button[type="submit"]').prop('disabled', true).html(
+                            '<i class="fas fa-spinner fa-spin"></i> Saving...');
+                    },
+                    success: function (response) {
+                        if (response.status) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                $('#modalUser').modal('hide');
+                                form[0].reset();
+                                table.ajax.reload(null, false); 
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        let errors = xhr.responseJSON?.errors;
+                        if (errors) {
+                            $.each(errors, function (field, messages) {
+                                let input = form.find(`[name="${field}"]`);
+                                input.addClass('is-invalid');
+                                input.after(`<div class="invalid-feedback">${messages.join(', ')}</div>`);
+                            });
+                        } else {
+                            let msg = xhr.responseJSON?.message || 'An error occurred while saving the user.';
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops!',
+                                text: msg
+                            });
+                        }
+                    },
+                    complete: function () {
+                        form.find('button[type="submit"]').prop('disabled', false).html(
+                            'Save');
+                    }
+                });
+            });
+
+          
+            $(document).on('click', '.btnEditUser', function () {
+                let userId = $(this).data('id');
+                $("#modalEditLabel").text("Edit User");
+
+                $('#formEditUser').find('.invalid-feedback').remove();
+                $('#formEditUser').find('.form-control').removeClass('is-invalid');
+
+
+                $.ajax({
+                    url: `/user/${userId}/edit`, 
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.status) {
+                            $('#editUserId').val(response.data.id);
+                            $('#editNama').val(response.data.name);
+                            $('#editEmail').val(response.data.email);
+                            $('#editRole').val(response.data.role_id);
+
+                            $('#modalEditUser').modal('show');
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message || 'Failed to fetch user data for editing.'
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        let msg = xhr.responseJSON?.message || 'An error occurred while fetching user data.';
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops!',
                             text: msg
                         });
                     }
-                },
-                complete: function () {
-                    $(form).find('button[type="submit"]').prop('disabled', false).html(
-                        'Simpan');
-                }
+                });
             });
-        });
 
+            $("#formEditUser").on("submit", function (e) {
+                e.preventDefault();
+                let form = $(this);
+                let userId = $("#editUserId").val();
+                let formData = form.serialize();
 
-        $(".btnDeleteUser").click(function () {
-            let id = $(this).data("id");
+                $.ajax({
+                    url: `/user/update/${userId}`,
+                    type: "POST",
+                    data: formData,
+                    dataType: 'json',
+                    beforeSend: function () {
+                        // Clear previous error messages
+                        form.find('.invalid-feedback').remove();
+                        form.find('.form-control').removeClass('is-invalid');
 
-            Swal.fire({
-                title: "Yakin ingin menghapus?",
-                text: "Data akan dihapus secara permanen!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, Hapus!",
-                cancelButtonText: "Batal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/user/delete/${id}`,
-                        type: "GET",
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function (response) {
+                        form.find('button[type="submit"]').prop('disabled', true).html(
+                            '<i class="fas fa-spinner fa-spin"></i> Updating...');
+                    },
+                    success: function (response) {
+                        if (response.status) {
                             Swal.fire({
                                 icon: "success",
-                                title: "Berhasil Dihapus!",
+                                title: "Success!",
+                                text: response.message,
                                 showConfirmButton: false,
-                                timer: 1500
+                                timer: 2000
                             }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function (xhr) {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Gagal!",
-                                text: xhr.responseJSON?.message || "Terjadi kesalahan."
+                                $('#modalEditUser').modal('hide');
+                                table.ajax.reload(null, false); // Reload DataTables
                             });
                         }
-                    });
-                }
-            });
-        });
-
-      
-        $(document).on('click', '.btnEditUser', function () {
-            
-            let id = $("#editUserId").val();
-            let name = $("#editNama").val();
-            let email = $("#editEmail").val();
-            let role = $("#editRole").val();
-
-            $.ajax({
-                url: `/user/listdata/${id}`,
-                type: 'GET',
-                success: function (response) {
-                    $('#editUserId').val(response.id);
-                    $('#editNama').val(response.name);
-                    $('#editEmail').val(response.email);
-                    $('#editRole').val(response.role_id);
-                    $('#modalEditUser').modal('show');
-                },
-                error: function (xhr) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Gagal!",
-                        text: "Tidak bisa mengambil data user."
-                    });
-                }
-            });
-        });
-
-        $("#formEditUser").submit(function (e) {
-            e.preventDefault();
-
-            let id = $("#editUserId").val();
-            let name = $("#editNama").val();
-            let email = $("#editEmail").val();
-            let role = $("#editRole").val();
-            $.ajax({
-                url: `/user/update/${id}`,
-                type: "POST",
-                data: {
-                    name: name,
-                    email: email,
-                    role_id: role,
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function (response) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Berhasil Diperbarui!",
-                        text: "Data user berhasil diperbarui.",
-                        showConfirmButton: true,
-                        confirmButtonText: "OK"
-                    }).then(() => {
-                        location.reload();
-                    });
-                },
-                error: function (xhr) {
-                    let errorMessage = "Terjadi kesalahan.";
-                    if (xhr.responseJSON && xhr.responseJSON.errors) {
-                        errorMessage = Object.values(xhr.responseJSON.errors)
-                            .map((error) => error.join(", "))
-                            .join("\n");
+                    },
+                    error: function (xhr) {
+                        let errors = xhr.responseJSON?.errors;
+                        if (errors) {
+                            $.each(errors, function (field, messages) {
+                                let input = form.find(`[name="${field}"]`);
+                                input.addClass('is-invalid');
+                                input.after(`<div class="invalid-feedback">${messages.join(', ')}</div>`);
+                            });
+                        } else {
+                            let msg = xhr.responseJSON?.message || "An error occurred while updating the user.";
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops!",
+                                text: msg
+                            });
+                        }
+                    },
+                    complete: function () {
+                        form.find('button[type="submit"]').prop('disabled', false).html(
+                            'Save');
                     }
-                    Swal.fire({
-                        icon: "error",
-                        title: "Gagal!",
-                        text: errorMessage,
-                        showConfirmButton: true,
-                        confirmButtonText: "OK"
-                    });
-                }
+                });
             });
-        });
+
+            // Handle delete button click (using event delegation)
+            $(document).on('click', '.btnDeleteUser', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: "Are you sure you want to delete?",
+                    text: "Data will be permanently deleted!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, Delete!",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/user/delete/${id}`,
+                            type: "DELETE", // Use DELETE method for RESTful APIs
+                            data: {
+                                _token: "{{ csrf_token() }}"
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Deleted!",
+                                    text: response.message || "User has been deleted successfully.",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
+                                    table.ajax.reload(null, false); // Reload DataTables
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Failed!",
+                                    text: xhr.responseJSON?.message || "An error occurred during deletion."
+                                });
+                            }
+                        });
+                    }
+                });
+            });
 
 
-        // Reset Password
-        $(".btnResetPassword").click(function () {
-            let id = $(this).data("id");
+            $(document).on('click', '.btnResetPassword', function () {
+                let id = $(this).data("id");
 
-            Swal.fire({
-                title: "Yakin ingin mereset password?",
-                text: "Password akan direset ke default!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, Reset!",
-                cancelButtonText: "Batal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/user/reset-password/${id}`,
-                        type: "GET",
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function (response) {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Berhasil Direset!",
-                                text: "Password berhasil direset ke default.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function (xhr) {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Gagal!",
-                                text: xhr.responseJSON?.message || "Terjadi kesalahan."
-                            });
-                        }
-                    });
-                }
+                Swal.fire({
+                    title: "Are you sure you want to reset the password?",
+                    text: "The password will be reset to default!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, Reset!",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/user/reset-password/${id}`,
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}"
+                            },
+                            success: function (response) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Password Reset!",
+                                    text: response.message || "Password has been reset to default.",
+                                    showConfirmButton: true,
+                                    confirmButtonText: "OK"
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Failed!",
+                                    text: xhr.responseJSON?.message || "An error occurred while resetting the password."
+                                });
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>
