@@ -19,7 +19,9 @@ class Presensi extends Model
         'location',
     ];
 
-    protected $dates = ['checked_at'];
+    protected $casts = [
+        'checked_at' => 'datetime',
+    ];
 
     public function user()
     {
