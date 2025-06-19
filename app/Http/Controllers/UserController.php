@@ -100,7 +100,6 @@ class UserController extends Controller
     public function destroy($id)
     {
         try {
-            // Cari user berdasarkan ID dan hapus
             $user = User::findOrFail($id);
             $user->delete();
 

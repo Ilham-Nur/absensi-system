@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleController;
@@ -50,6 +51,11 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
+
+
+//History Absensi
+Route::middleware('auth:sanctum')->get('/history-absensi', [AbsensiController::class, 'history']);
+
 
 //scanner
 Route::get('/scanner', [ScannerController::class, 'index'])->name('scanner.index');
