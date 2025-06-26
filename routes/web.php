@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScannerController;
 use App\Http\Controllers\UserController;
@@ -49,6 +50,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/delete/{id}', [WaktuController::class, 'destroy'])->name('waktu.delete');
         Route::get('/list', [WaktuController::class, 'list'])->name('waktu.list');
     });
+
+
+    Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
+    Route::get('/history/list', [HistoryController::class, 'getListHistory'])->name('history.list');
+    Route::get('/history/export', [HistoryController::class, 'exportExcel'])->name('history.export');
 
 });
 

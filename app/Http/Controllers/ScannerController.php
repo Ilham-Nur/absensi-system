@@ -14,46 +14,57 @@ class ScannerController extends Controller
         return view('scanner.index');
     }
 
-        public function scan(Request $request)
-        {
+    public function scan(Request $request)
+    {
+        $qrCode = $request->input('result');
+        $parts = explode('_', $qrCode);
 
-            // dd($request->all());
-            $qrCode = $request->input('result');
-            $parts = explode('_', $qrCode);
+        if (count($parts) < 3) {
+            return response()->json(['status' => 'error', 'message' => 'Format QR tidak valid.'], 422);
+        }
 
-            if (count($parts) < 3) {
-                return response()->json(['message' => 'Format QR tidak valid.'], 422);
-            }
+        [$uuid, $date, $time] = $parts;
 
-            $uuid = $parts[0];
-            $date = $parts[1];
-            $time = $parts[2];
-
-            // Gabungkan dan parsing tanggal + waktu
+        try {
             $datetimeStr = str_replace('-', '/', $date) . ' ' . str_replace('-', ':', $time);
             $checkedAt = Carbon::createFromFormat('d/m/Y H:i', $datetimeStr);
-
-            // Validasi waktu
-            if (Carbon::now()->diffInMinutes($checkedAt, false) < -10) {
-                return response()->json(['message' => 'QR sudah kedaluwarsa.'], 410);
-            }
-
-            // Cari user
-            $user = User::where('uuid', $uuid)->first();
-            if (!$user) {
-                return response()->json(['message' => 'User tidak ditemukan.'], 404);
-            }
-
-            // Simpan presensi (status default: hadir = 1)
-            Presensi::create([
-                'uuid' => (string) \Str::uuid(),
-                'user_id' => $user->id,
-                'checked_at' => now(),
-                'status_presensi_id' => 1,
-                'location' => $request->input('location')
-            ]);
-
-            return response()->json(['message' => 'Presensi berhasil disimpan.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Format waktu tidak valid.'], 422);
         }
+
+        if (now()->diffInMinutes($checkedAt, false) < -10) {
+            return response()->json(['status' => 'error', 'message' => 'QR sudah kedaluwarsa.'], 410);
+        }
+
+        $user = User::where('uuid', $uuid)->first();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'User tidak ditemukan.'], 404);
+        }
+
+        $lastPresensi = Presensi::where('user_id', $user->id)
+            ->orderBy('checked_at', 'desc')
+            ->first();
+
+        if ($lastPresensi && $lastPresensi->checked_at->diffInMinutes(now()) < 30) {
+            $remaining = 30 - $lastPresensi->checked_at->diffInMinutes(now());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Sudah melakukan presensi. Silakan tunggu ' . $remaining . ' menit lagi.'
+            ], 429);
+        }
+
+        Presensi::create([
+            'uuid' => (string) \Str::uuid(),
+            'user_id' => $user->id,
+            'checked_at' => now(),
+            'status_presensi_id' => 1,
+            'location' => $request->input('location')
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Presensi berhasil disimpan.'
+        ]);
+    }
 
 }
