@@ -23,20 +23,34 @@ class ScannerController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Format QR tidak valid.'], 422);
         }
 
-        $uuid = $parts[0];
-        $date = $parts[1];
-        $time = $parts[2];
+        [$uuid, $date, $time] = $parts;
 
-        $datetimeStr = str_replace('-', '/', $date) . ' ' . str_replace('-', ':', $time);
-        $checkedAt = Carbon::createFromFormat('d/m/Y H:i', $datetimeStr);
+        try {
+            $datetimeStr = str_replace('-', '/', $date) . ' ' . str_replace('-', ':', $time);
+            $checkedAt = Carbon::createFromFormat('d/m/Y H:i', $datetimeStr);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Format waktu tidak valid.'], 422);
+        }
 
-        if (Carbon::now()->diffInMinutes($checkedAt, false) < -10) {
+        if (now()->diffInMinutes($checkedAt, false) < -10) {
             return response()->json(['status' => 'error', 'message' => 'QR sudah kedaluwarsa.'], 410);
         }
 
         $user = User::where('uuid', $uuid)->first();
         if (!$user) {
             return response()->json(['status' => 'error', 'message' => 'User tidak ditemukan.'], 404);
+        }
+
+        $lastPresensi = Presensi::where('user_id', $user->id)
+            ->orderBy('checked_at', 'desc')
+            ->first();
+
+        if ($lastPresensi && $lastPresensi->checked_at->diffInMinutes(now()) < 30) {
+            $remaining = 30 - $lastPresensi->checked_at->diffInMinutes(now());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Sudah melakukan presensi. Silakan tunggu ' . $remaining . ' menit lagi.'
+            ], 429);
         }
 
         Presensi::create([
