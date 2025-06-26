@@ -179,6 +179,16 @@
                 (decodedText, decodedResult) => {
                     resultInput.value = decodedText;
 
+                    // Tampilkan loading
+                    Swal.fire({
+                        title: 'Memproses...',
+                        html: 'Mohon tunggu sebentar.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
                     // Kirim ke backend via AJAX
                     fetch("{{ route('scanner.scan') }}", {
                             method: "POST",
@@ -192,9 +202,10 @@
                         })
                         .then(async response => {
                             const data = await response.json();
+                            Swal.close(); // Tutup loading
 
+                            // Tampilkan pesan sesuai status
                             if (response.ok) {
-                                // Status 200-an (termasuk 200 dan 201)
                                 Swal.fire({
                                     icon: 'success',
                                     title: data.message || 'Presensi berhasil',
@@ -202,7 +213,6 @@
                                     showConfirmButton: false
                                 });
                             } else {
-                                // Status 4xx atau 5xx termasuk 429
                                 Swal.fire({
                                     icon: 'warning',
                                     title: 'Presensi gagal',
@@ -210,22 +220,27 @@
                                     timer: 3000,
                                     showConfirmButton: false
                                 });
+                            }
 
-                            if (data.status === 'success') {
-                                resultInput.value = ''; // Kosongkan input hanya jika sukses
-                            }
-                            }
+                            // Reset input dan fokus lagi
+                            resultInput.value = '';
+                            resultInput.focus();
                         })
                         .catch(error => {
+                            Swal.close();
                             console.error(error);
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Terjadi kesalahan',
                                 text: 'Gagal mengirim data.',
                             });
+
+                            // Reset input dan fokus lagi meskipun error
+                            resultInput.value = '';
+                            resultInput.focus();
                         });
 
-                    // Matikan kamera
+                    // Matikan scanner setelah 1 scan
                     html5QrCode.stop().then(() => {
                         scannerStarted = false;
                         readerDiv.style.display = 'none';
@@ -233,7 +248,7 @@
                     });
                 },
                 (errorMessage) => {
-                    // error saat scan (tidak ditampilkan)
+                    // Tidak perlu tampilkan kesalahan kecil saat tidak ada QR
                 }
             ).then(() => {
                 scannerStarted = true;

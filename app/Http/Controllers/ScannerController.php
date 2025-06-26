@@ -48,7 +48,7 @@ use Illuminate\Support\Str;
             ->first();
 
         if ($lastPresensi && $lastPresensi->checked_at->diffInMinutes(now()) < 30) {
-            $remaining = 30 - $lastPresensi->checked_at->diffInMinutes(now());
+            $remaining = floor(30 - $lastPresensi->checked_at->diffInMinutes(now()));
             return response()->json([
                 'status' => 'error',
                 'message' => 'Sudah melakukan presensi. Silakan tunggu ' . $remaining . ' menit lagi.'
