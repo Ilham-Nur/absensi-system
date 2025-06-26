@@ -190,17 +190,30 @@
                                 result: decodedText
                             })
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            Swal.fire({
-                                icon: data.status === 'success' ? 'success' : 'error',
-                                title: data.message,
-                                timer: 3000,
-                                showConfirmButton: false
-                            });
+                        .then(async response => {
+                            const data = await response.json();
+
+                            if (response.ok) {
+                                // Status 200-an (termasuk 200 dan 201)
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: data.message || 'Presensi berhasil',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                // Status 4xx atau 5xx termasuk 429
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Presensi gagal',
+                                    text: data.message || 'Terjadi kesalahan saat presensi.',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
 
                             if (data.status === 'success') {
                                 resultInput.value = ''; // Kosongkan input hanya jika sukses
+                            }
                             }
                         })
                         .catch(error => {
