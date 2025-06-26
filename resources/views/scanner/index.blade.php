@@ -198,6 +198,10 @@
                                 timer: 3000,
                                 showConfirmButton: false
                             });
+
+                            if (data.status === 'success') {
+                                resultInput.value = ''; // Kosongkan input hanya jika sukses
+                            }
                         })
                         .catch(error => {
                             console.error(error);
