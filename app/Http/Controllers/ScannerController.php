@@ -21,11 +21,11 @@ use Illuminate\Support\Str;
         $qrCode = $request->input('result');
         $parts = explode('_', $qrCode);
 
-        if (count($parts) < 3) {
+        if (count($parts) < 4) {
             return response()->json(['status' => 'error', 'message' => 'Format QR tidak valid.'], 422);
         }
 
-        [$uuid, $date, $time] = $parts;
+        [$uuid, $date, $time, $koodinat] = $parts;
 
         try {
             $datetimeStr = str_replace('-', '/', $date) . ' ' . str_replace('-', ':', $time);
@@ -71,7 +71,7 @@ use Illuminate\Support\Str;
             'user_id' => $user->id,
             'checked_at' => now(),
             'status_presensi_id' => $status->status_id,
-            'location' => $request->input('location')
+            'location' => $koodinat
         ]);
 
         return response()->json([
