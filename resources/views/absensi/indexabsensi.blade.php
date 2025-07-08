@@ -135,3 +135,12 @@
         </div>
     </section>
 @endsection
+
+@section( 'scripts')
+<script>
+    $(document).ready(function() {
+        
+    });
+</script>
+
+@endsection
