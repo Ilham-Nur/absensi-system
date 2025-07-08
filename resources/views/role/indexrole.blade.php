@@ -3,9 +3,6 @@
 @section('title', 'Role')
 
 @section('content')
-
-
-    <!-- Modal Tambah -->
     <div class="modal fade" id="tambahRoleModal" tabindex="-1" aria-labelledby="tambahRoleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

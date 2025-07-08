@@ -52,10 +52,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/list', [WaktuController::class, 'list'])->name('waktu.list');
     });
 
-
+    //history
     Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
     Route::get('/history/list', [HistoryController::class, 'getListHistory'])->name('history.list');
     Route::get('/history/export', [HistoryController::class, 'exportExcel'])->name('history.export');
+
+    //absensi
+    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
 
 });
 

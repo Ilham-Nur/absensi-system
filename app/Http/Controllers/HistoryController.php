@@ -14,7 +14,7 @@ class HistoryController extends Controller
 {
     public function index()
     {
-        return view('history.index');
+        return view('history.indexhistory');
     }
 
     public function getListHistory(Request $request)
