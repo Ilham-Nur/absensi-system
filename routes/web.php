@@ -59,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
 
     //absensi
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-
+    route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absensi.store');
 });
 
 

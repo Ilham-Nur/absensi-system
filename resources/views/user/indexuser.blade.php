@@ -143,6 +143,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        {{-- DataTables will populate this tbody via AJAX --}}
                                     </tbody>
                                 </table>
                             </div>
