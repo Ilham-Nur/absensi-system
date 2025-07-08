@@ -27,19 +27,19 @@ class WaktuController extends Controller
     }
     public function store(Request $request)
     {
-        // Validasi data yang dikirim dari frontend
+        // dd($request->all());
         $request->validate([
             'status_id' => 'required|exists:status,id',
-            'starttime' => 'required|date_format:H:i',
-            'endtime' => 'required|date_format:H:i|after:starttime',
+            'starttime' => 'required|',
+            'endtime' => 'required|after:starttime',
         ]);
 
         try {
             // Simpan data ke tabel waktu
             Waktu::create([
                 'status_id' => $request->status_id,
-                'starttime' => $request->starttime,
-                'endtime'   => $request->endtime,
+                'starttime' => $request->starttime . ':00',
+                'endtime'   => $request->endtime . ':00',
             ]);
 
             return response()->json(['success' => true]);
@@ -63,16 +63,16 @@ class WaktuController extends Controller
         // dd($request->all());
         $request->validate([
             'status_id' => 'required|exists:status,id',
-            'starttime' => 'required|date_format:H:i',
-            'endtime' => 'required|date_format:H:i|after:starttime',
+            'starttime' => 'required',
+            'endtime' => 'required|after:starttime',
         ]);
 
         try {
             $waktu = Waktu::findOrFail($id);
             $waktu->update([
                 'status_id' => $request->status_id,
-                'starttime' => $request->starttime,
-                'endtime'   => $request->endtime,
+                'starttime' => $request->starttime . ':00',
+                'endtime'   => $request->endtime . ':00',
             ]);
 
             return response()->json(['success' => true]);
