@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absensi;
+use App\Models\Presensi;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class DashboardController extends Controller
 {
@@ -116,6 +120,55 @@ class DashboardController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function dataTable(Request $request)
+    {
+        $bulan = $request->input('bulan'); // format: YYYY-MM
+
+        // Ambil semua user
+        $users = User::select('id', 'name')->get();
+
+        $data = $users->map(function ($user) use ($bulan) {
+            // Filter bulan
+            $startOfMonth = $bulan ? date($bulan . '-01') : null;
+            $endOfMonth = $bulan ? date('Y-m-t', strtotime($startOfMonth)) : null;
+
+            // Hitung jumlah presensi
+            $masuk = Presensi::where('user_id', $user->id)
+                ->when($bulan, function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->whereBetween('checked_at', [$startOfMonth, $endOfMonth]);
+                })
+                ->count();
+
+            // Hitung jumlah keterlambatan (status_presensi_id = 2)
+            $terlambat = Presensi::where('user_id', $user->id)
+                ->where('status_presensi_id', 2)
+                ->when($bulan, function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->whereBetween('checked_at', [$startOfMonth, $endOfMonth]);
+                })
+                ->count();
+
+            // Hitung jumlah izin/sakit
+            $izin_sakit = Absensi::where('user_id', $user->id)
+                ->whereIn('status_absensi', ['izin', 'sakit'])
+                ->when($bulan, function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                        $q->whereBetween('start', [$startOfMonth, $endOfMonth])
+                        ->orWhereBetween('end', [$startOfMonth, $endOfMonth]);
+                    });
+                })
+                ->count();
+
+            return [
+                'name' => $user->name,
+                'masuk' => $masuk,
+                'terlambat' => $terlambat,
+                'izin_sakit' => $izin_sakit,
+            ];
+        });
+
+        return DataTables::of($data)->toJson();
     }
 
 

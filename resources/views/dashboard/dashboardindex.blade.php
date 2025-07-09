@@ -174,26 +174,25 @@
                                     <div class="card-style mb-30">
                                         <div class="title d-flex flex-wrap align-items-center justify-content-between">
                                             <div class="left">
-                                                <h6 class="text-medium mb-30"></h6>
+                                                <h6 class="text-medium mb-30">Personal Count</h6>
                                             </div>
-                                            <div class="right">
-                                                <div class="select-style-1">
-                                                    <div class="select-position select-sm">
-                                                        <select class="light-bg">
-                                                            <option value="">Today</option>
-                                                            <option value="">Yesterday</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <!-- end select -->
+                                        </div>
+                                        <div class="d-flex">
+                                            <div class="col-md-3">
+                                                <label for="bulan">Filter Bulan:</label>
+                                                <input type="month" id="bulan" class="form-control"
+                                                    value="{{ now()->format('Y-m') }}">
+                                            </div>
+                                            <div class="col-md-3 d-flex align-items-end">
+                                                <button id="filterBtn" class="btn btn-primary ms-2">Filter</button>
+                                                <button id="resetBtn" class="btn btn-secondary ms-2">Reset</button>
                                             </div>
                                         </div>
                                         <!-- End Title -->
-                                        <div class="table-responsive">
-                                            <table class="table top-selling-table">
+                                        <div class="table-responsive mt-3">
+                                            <table class="table" id="tableCountPersonal">
                                                 <thead>
                                                     <tr>
-                                                        <th>Products</th>
                                                         <th>Nama</th>
                                                         <th>Masuk</th>
                                                         <th>Terlambat</th>
@@ -201,7 +200,6 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <!-- Isi table -->
                                                 </tbody>
                                             </table>
                                         </div>
@@ -433,6 +431,60 @@
         // Init
         populateMonthPicker();
         loadChartData(currentMonth);
+
+
+        $(document).ready(function() {
+            let table = $('#tableCountPersonal').DataTable({
+                processing: true,
+                serverSide: true,
+                searching: false,
+                lengthChange: false,
+                pageLength: 6,
+                ajax: {
+                    url: "{{ route('dashboard.dataTable') }}",
+                    data: function(d) {
+                        d.bulan = $('#bulan').val(); // selalu ambil value bulan
+                    }
+                },
+                columns: [{
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'masuk',
+                        name: 'masuk'
+                    },
+                    {
+                        data: 'terlambat',
+                        name: 'terlambat'
+                    },
+                    {
+                        data: 'izin_sakit',
+                        name: 'izin_sakit'
+                    }
+                ],
+            });
+
+            $('#filterBtn').click(function() {
+                table.ajax.reload();
+            });
+
+            $('#resetBtn').click(function() {
+                // Ambil bulan sekarang (format YYYY-MM)
+                let today = new Date();
+                let month = today.getMonth() + 1; // Bulan dimulai dari 0
+                let year = today.getFullYear();
+                if (month < 10) month = '0' + month; // Tambah 0 jika bulan < 10
+                let currentMonth = year + '-' + month;
+
+                // Set value bulan ke bulan saat ini
+                $('#bulan').val(currentMonth);
+
+                // Reload DataTable
+                table.ajax.reload();
+            });
+
+        });
     </script>
 
 @endsection
