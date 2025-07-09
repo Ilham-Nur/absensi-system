@@ -3,6 +3,76 @@
 @section('title', 'Dashboard')
 
 @section('content')
+
+    <style>
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .slides {
+            display: flex;
+            width: 100%;
+            /* height: 400px; */
+            transition: transform 2s ease;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+        }
+
+        .prev,
+        .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.3s;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev:hover,
+        .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .slide-indicators {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .indicator {
+            cursor: pointer;
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .active,
+        .indicator:hover {
+            background-color: #717171;
+        }
+    </style>
     <section class="section">
         <div class="container-fluid">
             <!-- ========== title-wrapper start ========== -->
@@ -66,255 +136,178 @@
                 </div>
                 <!-- End Col -->
             </div>
-            <!-- End Row -->
             <div class="row">
-
-                <!-- End Col -->
                 <div class="col-lg-12">
-                    <div class="card-style mb-30">
-                        <div class="title d-flex flex-wrap align-items-center justify-content-between">
-                            <div>
-                                <h4 class="text-medium mb-2">Chart Kehadiran</h4>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <button id="prevMonth" class="btn btn-light">&lt;</button>
-                                    <h6 id="currentMonth" class="mx-3">July 2025</h6>
-                                    <button id="nextMonth" class="btn btn-light">&gt;</button>
-                                    <select id="monthPicker" class="form-select w-auto ms-3">
-                                        <!-- Isi bulan otomatis -->
-                                    </select>
-                                    <button id="btnCurrentMonth" class="btn ms-3 btn-secondary">Bulan Sekarang</button>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Title -->
-                        <div class="chart">
-                            <canvas id="attendanceChart" height="100"></canvas>
-                        </div>
-                        <!-- End Chart -->
-                    </div>
-                </div>
-                <!-- End Col -->
-            </div>
-            <!-- End Row -->
-            <div class="row">
-
-                <!-- End Col -->
-                <div class="col-lg-12">
-                    <div class="card-style mb-30">
-                        <div class="title d-flex flex-wrap align-items-center justify-content-between">
-                            <div class="left">
-                                <h6 class="text-medium mb-30">Sales History</h6>
-                            </div>
-                            <div class="right">
-                                <div class="select-style-1">
-                                    <div class="select-position select-sm">
-                                        <select class="light-bg">
-                                            <option value="">Today</option>
-                                            <option value="">Yesterday</option>
-                                        </select>
+                    <div class="slideshow-container">
+                        <div class="slides">
+                            <!-- Slide 1 -->
+                            <div class="slide">
+                                <div class="col-lg-12">
+                                    <div class="card-style mb-30">
+                                        <div class="title d-flex flex-wrap align-items-center justify-content-between">
+                                            <div>
+                                                <h4 class="text-medium mb-2">Chart Kehadiran</h4>
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <button id="prevMonth" class="btn btn-light">&lt;</button>
+                                                    <h6 id="currentMonth" class="mx-3">July 2025</h6>
+                                                    <button id="nextMonth" class="btn btn-light">&gt;</button>
+                                                    <select id="monthPicker" class="form-select w-auto ms-3">
+                                                        <!-- Isi bulan otomatis -->
+                                                    </select>
+                                                    <button id="btnCurrentMonth" class="btn ms-3 btn-secondary">Bulan
+                                                        Sekarang</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Title -->
+                                        <div class="chart">
+                                            <canvas id="attendanceChart" height="100"></canvas>
+                                        </div>
+                                        <!-- End Chart -->
                                     </div>
                                 </div>
-                                <!-- end select -->
                             </div>
+
+                            <!-- Slide 2 -->
+                            <div class="slide">
+                                <div class="col-lg-12">
+                                    <div class="card-style mb-30">
+                                        <div class="title d-flex flex-wrap align-items-center justify-content-between">
+                                            <div class="left">
+                                                <h6 class="text-medium mb-30"></h6>
+                                            </div>
+                                            <div class="right">
+                                                <div class="select-style-1">
+                                                    <div class="select-position select-sm">
+                                                        <select class="light-bg">
+                                                            <option value="">Today</option>
+                                                            <option value="">Yesterday</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <!-- end select -->
+                                            </div>
+                                        </div>
+                                        <!-- End Title -->
+                                        <div class="table-responsive">
+                                            <table class="table top-selling-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Products</th>
+                                                        <th>Nama</th>
+                                                        <th>Masuk</th>
+                                                        <th>Terlambat</th>
+                                                        <th>Izin/Sakit</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Isi table -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
-                        <!-- End Title -->
-                        <div class="table-responsive">
-                            <table class="table top-selling-table">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <h6 class="text-sm text-medium">Products</h6>
-                                        </th>
-                                        <th class="min-width">
-                                            <h6 class="text-sm text-medium">
-                                                Category <i class="lni lni-arrows-vertical"></i>
-                                            </h6>
-                                        </th>
-                                        <th class="min-width">
-                                            <h6 class="text-sm text-medium">
-                                                Revenue <i class="lni lni-arrows-vertical"></i>
-                                            </h6>
-                                        </th>
-                                        <th class="min-width">
-                                            <h6 class="text-sm text-medium">
-                                                Status <i class="lni lni-arrows-vertical"></i>
-                                            </h6>
-                                        </th>
-                                        <th>
-                                            <h6 class="text-sm text-medium text-end">
-                                                Actions <i class="lni lni-arrows-vertical"></i>
-                                            </h6>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="product">
-                                                <div class="image">
-                                                    <img src="assets/images/products/product-mini-1.jpg" alt="" />
-                                                </div>
-                                                <p class="text-sm">Bedroom</p>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p class="text-sm">Interior</p>
-                                        </td>
-                                        <td>
-                                            <p class="text-sm">$345</p>
-                                        </td>
-                                        <td>
-                                            <span class="status-btn close-btn">Pending</span>
-                                        </td>
-                                        <td>
-                                            <div class="action justify-content-end">
-                                                <button class="edit">
-                                                    <i class="lni lni-pencil"></i>
-                                                </button>
-                                                <button class="more-btn ml-10 dropdown-toggle" id="moreAction1"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="lni lni-more-alt"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="moreAction1">
-                                                    <li class="dropdown-item">
-                                                        <a href="#0" class="text-gray">Remove</a>
-                                                    </li>
-                                                    <li class="dropdown-item">
-                                                        <a href="#0" class="text-gray">Edit</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="product">
-                                                <div class="image">
-                                                    <img src="assets/images/products/product-mini-2.jpg" alt="" />
-                                                </div>
-                                                <p class="text-sm">Arm Chair</p>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p class="text-sm">Interior</p>
-                                        </td>
-                                        <td>
-                                            <p class="text-sm">$345</p>
-                                        </td>
-                                        <td>
-                                            <span class="status-btn warning-btn">Refund</span>
-                                        </td>
-                                        <td>
-                                            <div class="action justify-content-end">
-                                                <button class="edit">
-                                                    <i class="lni lni-pencil"></i>
-                                                </button>
-                                                <button class="more-btn ml-10 dropdown-toggle" id="moreAction1"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="lni lni-more-alt"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="moreAction1">
-                                                    <li class="dropdown-item">
-                                                        <a href="#0" class="text-gray">Remove</a>
-                                                    </li>
-                                                    <li class="dropdown-item">
-                                                        <a href="#0" class="text-gray">Edit</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="product">
-                                                <div class="image">
-                                                    <img src="assets/images/products/product-mini-3.jpg" alt="" />
-                                                </div>
-                                                <p class="text-sm">Sofa</p>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p class="text-sm">Interior</p>
-                                        </td>
-                                        <td>
-                                            <p class="text-sm">$345</p>
-                                        </td>
-                                        <td>
-                                            <span class="status-btn success-btn">Completed</span>
-                                        </td>
-                                        <td>
-                                            <div class="action justify-content-end">
-                                                <button class="edit">
-                                                    <i class="lni lni-pencil"></i>
-                                                </button>
-                                                <button class="more-btn ml-10 dropdown-toggle" id="moreAction1"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="lni lni-more-alt"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="moreAction1">
-                                                    <li class="dropdown-item">
-                                                        <a href="#0" class="text-gray">Remove</a>
-                                                    </li>
-                                                    <li class="dropdown-item">
-                                                        <a href="#0" class="text-gray">Edit</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="product">
-                                                <div class="image">
-                                                    <img src="assets/images/products/product-mini-4.jpg" alt="" />
-                                                </div>
-                                                <p class="text-sm">Kitchen</p>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p class="text-sm">Interior</p>
-                                        </td>
-                                        <td>
-                                            <p class="text-sm">$345</p>
-                                        </td>
-                                        <td>
-                                            <span class="status-btn close-btn">Canceled</span>
-                                        </td>
-                                        <td>
-                                            <div class="action justify-content-end">
-                                                <button class="edit">
-                                                    <i class="lni lni-pencil"></i>
-                                                </button>
-                                                <button class="more-btn ml-10 dropdown-toggle" id="moreAction1"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="lni lni-more-alt"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="moreAction1">
-                                                    <li class="dropdown-item">
-                                                        <a href="#0" class="text-gray">Remove</a>
-                                                    </li>
-                                                    <li class="dropdown-item">
-                                                        <a href="#0" class="text-gray">Edit</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!-- End Table -->
+
+                        <!-- Tombol navigasi -->
+                        <a class="prev" onclick="moveSlide(-1)">&#10094;</a>
+                        <a class="next" onclick="moveSlide(1)">&#10095;</a>
+
+                        <!-- Indikator slide -->
+                        <div class="slide-indicators">
+                            <span class="indicator active" onclick="goToSlide(0)"></span>
+                            <span class="indicator" onclick="goToSlide(1)"></span>
                         </div>
                     </div>
                 </div>
-                <!-- End Col -->
             </div>
-            <!-- End Row -->
         </div>
         <!-- end container -->
     </section>
 @endsection
 
 @section('script')
+
+    <script>
+        let currentIndex = 0;
+        let slideInterval;
+        let userActivityTimeout;
+        const autoSlideDelay = 10000;
+        const inactivityDelay = 20000;
+        const slides = document.querySelector('.slides');
+        const slideItems = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = slideItems.length;
+
+        // Inisialisasi slideshow
+        startAutoSlide();
+
+        // Fungsi untuk menggerakkan slide
+        function moveSlide(direction) {
+            currentIndex += direction;
+
+            if (currentIndex >= totalSlides) {
+                currentIndex = 0;
+            } else if (currentIndex < 0) {
+                currentIndex = totalSlides - 1;
+            }
+
+            updateSlidePosition();
+            updateIndicators();
+            handleUserActivity();
+        }
+
+        // Fungsi untuk pergi ke slide tertentu
+        function goToSlide(index) {
+            currentIndex = index;
+            updateSlidePosition();
+            updateIndicators();
+            handleUserActivity();
+        }
+
+        // Update posisi slide
+        function updateSlidePosition() {
+            slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        // Update indikator aktif
+        function updateIndicators() {
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        // Memulai slideshow otomatis
+        function startAutoSlide() {
+            slideInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateSlidePosition();
+                updateIndicators();
+            }, autoSlideDelay);
+        }
+
+        // Stop slideshow otomatis
+        function stopAutoSlide() {
+            clearInterval(slideInterval);
+        }
+
+        // Reset slideshow otomatis setelah 30 detik tidak ada interaksi
+        function handleUserActivity() {
+            stopAutoSlide(); // Stop auto slide saat ada interaksi
+
+            clearTimeout(userActivityTimeout); // Reset timer inactivity
+            userActivityTimeout = setTimeout(() => {
+                startAutoSlide(); // Mulai auto slide lagi setelah 30 detik tidak ada interaksi
+            }, inactivityDelay);
+        }
+
+        // Tambahkan event listener untuk semua interaksi di slideshow
+        document.querySelector('.slideshow-container').addEventListener('click', handleUserActivity);
+        document.querySelector('.slideshow-container').addEventListener('input', handleUserActivity);
+    </script>
+
     <script>
         let currentMonth = dayjs().format('YYYY-MM'); // Default bulan ini
         let attendanceChart;
