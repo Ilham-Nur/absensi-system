@@ -2,147 +2,85 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Scanner - Gatra Perdana Trustrue</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scan QR Code</title>
 
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- QR Code Scanner -->
+    <!-- HTML5 QR Code (untuk baca QR Code) -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
-    <style>
-        body,
-        html {
-            height: 100%;
-        }
-
-        .scanner-wrapper {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .scanner-container {
-            display: flex;
-            width: 100%;
-            max-width: 1200px;
-            background: #fff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        .illustration-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-right: 40px;
-            width: auto;
-
-        }
-
-        .illustration-container img {
-            max-height: 500px;
-            width: 100%;
-
-            max-width: 100%;
-
-            height: auto;
-
-            border-radius: 12px;
-            object-fit: contain;
-
-        }
-
-        .scanner-content {
-            flex: 1;
-            padding-left: 40px;
-            border-left: 1px solid #eee;
-        }
-
-        .scanner-header h3 {
-            font-weight: 600;
-        }
-
-        #reader {
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 20px;
-        }
-
-        .btn-group {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        @media (max-width: 992px) {
-            .scanner-container {
-                flex-direction: column;
-            }
-
-            .illustration-container {
-                padding-right: 0;
-                padding-bottom: 30px;
-            }
-
-            .scanner-content {
-                padding-left: 0;
-                border-left: none;
-                border-top: 1px solid #eee;
-                padding-top: 30px;
-            }
-        }
-    </style>
 </head>
 
-<body>
-    <div class="scanner-wrapper">
-        <div class="scanner-container">
-            <!-- Bagian ilustrasi di sebelah kiri -->
-            <div class="illustration-container">
-                <img src="{{ asset('images/ilustrasi_scaner.jpg') }}" alt="Scanner Illustration" class="img-fluid">
+<style>
+    /* Scale Video jadi kotak 1:1 */
+    #reader video {
+        object-fit: cover !important;
+        width: 100% !important;
+        height: 100% !important;
+        aspect-ratio: 1 / 1 !important;
+    }
+</style>
+
+
+<body class="bg-gray-50 min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-3xl bg-white shadow-xl rounded-xl p-6 sm:p-8 space-y-6">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-gray-800">🔍 QR / Barcode Scanner</h1>
+            <p class="text-gray-500 text-sm mt-1">Arahkan kamera ke kode untuk mulai memindai.</p>
+        </div>
+
+        <!-- Placeholder untk Scanner (Kamera) -->
+        <div class="relative w-full max-w-xs mx-auto aspect-square bg-black rounded-lg overflow-hidden">
+            <!-- Reader (kamera) -->
+            <div id="reader" class="absolute inset-0 z-0"></div>
+
+            <!-- Scanner Frame (sudut-sudut) -->
+            <div class="absolute inset-0 pointer-events-none z-10">
+                <!-- Top Left -->
+                <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-indigo-500 rounded-tl-lg"></div>
+                <!-- Top Right -->
+                <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-indigo-500 rounded-tr-lg"></div>
+                <!-- Bottom Left -->
+                <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-indigo-500 rounded-bl-lg">
+                </div>
+                <!-- Bottom Right -->
+                <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-indigo-500 rounded-br-lg">
+                </div>
             </div>
 
-            <!-- Bagian konten scanner di sebelah kanan -->
-            <div class="scanner-content text-center">
-                <!-- Judul -->
-                <div class="scanner-header mb-4">
-                    <h3><i class="bi bi-qr-code-scan"></i> QR / Barcode Scanner</h3>
-                    <p class="text-muted small">Klik tombol di bawah untuk mulai memindai kode.</p>
-                </div>
-
-                <!-- Hasil scan -->
-                <div class="mb-3 text-start">
-                    <label for="scan_result" class="form-label">Hasil Scan</label>
-                    <input type="text" class="form-control" id="scan_result" placeholder="Menunggu hasil scan...">
-                </div>
-
-                <!-- Tombol kontrol -->
-                <div class="btn-group mb-3 w-100">
-                    <button id="startScanBtn" class="btn btn-success w-50 me-2">
-                        <i class="bi bi-camera-video"></i> Mulai Scan
-                    </button>
-                    <button id="stopScanBtn" class="btn btn-danger w-50" disabled>
-                        <i class="bi bi-x-circle"></i> Tutup Kamera
-                    </button>
-                </div>
-
-                <!-- Kamera -->
-                <div id="reader" style="width: 100%; height: auto; display: none;"></div>
+            <!-- Arahan -->
+            <div class="absolute bottom-3 w-full text-center text-white text-sm font-medium pointer-events-none z-10">
+                Arahkan kamera ke QR / Barcode
             </div>
+        </div>
+
+        <!-- Hasil -->
+        <div>
+            <label for="scan_result" class="block text-sm font-medium text-gray-700 mb-1">Hasil Scan</label>
+            <input type="text" id="scan_result"
+                class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 text-sm" readonly
+                placeholder="Menunggu hasil..." />
+        </div>
+
+        <!-- Dua Tombol di bawah -->
+        <div class="flex flex-col sm:flex-row gap-3">
+            <button id="startScanBtn"
+                class="w-full sm:w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md font-semibold">
+                📷 Mulai Scan
+            </button>
+            <button id="stopScanBtn"
+                class="w-full sm:w-1/2 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md font-semibold"
+                disabled>
+                ✖️ Stop Scan
+            </button>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- Script JS (Jangan di otak-atik kata Ilham) -->
     <script>
         const startScanBtn = document.getElementById('startScanBtn');
         const stopScanBtn = document.getElementById('stopScanBtn');
@@ -152,7 +90,7 @@
         let html5QrCode;
         let scannerStarted = false;
 
-        startScanBtn.addEventListener('click', function() {
+        startScanBtn.addEventListener('click', () => {
             if (scannerStarted) {
                 Swal.fire({
                     icon: 'info',
@@ -165,111 +103,95 @@
             }
 
             html5QrCode = new Html5Qrcode("reader");
-            readerDiv.style.display = 'block';
 
             html5QrCode.start({
-                    facingMode: "environment"
-                }, {
-                    fps: 10,
-                    qrbox: {
-                        width: 250,
-                        height: 250
-                    }
-                },
-                (decodedText, decodedResult) => {
-                    resultInput.value = decodedText;
-
-                    // Tampilkan loading
-                    Swal.fire({
-                        title: 'Memproses...',
-                        html: 'Mohon tunggu sebentar.',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
+                        facingMode: "environment"
+                    }, {
+                        fps: 10,
+                        qrbox: {
+                            width: 250,
+                            height: 250
                         }
-                    });
+                    },
+                    (decodedText, decodedResult) => {
+                        resultInput.value = decodedText;
 
-                    // Kirim ke backend via AJAX
-                    fetch("{{ route('scanner.scan') }}", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                            },
-                            body: JSON.stringify({
-                                result: decodedText
-                            })
-                        })
-                        .then(async response => {
-                            const data = await response.json();
-                            Swal.close(); // Tutup loading
-
-                            // Tampilkan pesan sesuai status
-                            if (response.ok) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: data.message || 'Presensi berhasil',
-                                    timer: 3000,
-                                    showConfirmButton: false
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Presensi gagal',
-                                    text: data.message || 'Terjadi kesalahan saat presensi.',
-                                    timer: 3000,
-                                    showConfirmButton: false
-                                });
-                            }
-
-                            // Reset input dan fokus lagi
-                            resultInput.value = '';
-                            resultInput.focus();
-                        })
-                        .catch(error => {
-                            Swal.close();
-                            console.error(error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi kesalahan',
-                                text: 'Gagal mengirim data.',
-                            });
-
-                            // Reset input dan fokus lagi meskipun error
-                            resultInput.value = '';
-                            resultInput.focus();
+                        Swal.fire({
+                            title: 'Memproses...',
+                            html: 'Mohon tunggu sebentar.',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
                         });
 
-                    // Matikan scanner setelah 1 scan
-                    html5QrCode.stop().then(() => {
-                        scannerStarted = false;
-                        readerDiv.style.display = 'none';
-                        stopScanBtn.disabled = true;
+                        fetch("{{ route('scanner.scan') }}", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                                },
+                                body: JSON.stringify({
+                                    result: decodedText
+                                })
+                            })
+                            .then(async response => {
+                                const data = await response.json();
+                                Swal.close();
+                                if (response.ok) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: data.message || 'Presensi berhasil',
+                                        timer: 3000,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Presensi gagal',
+                                        text: data.message || 'Terjadi kesalahan saat presensi.',
+                                        timer: 3000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                                resultInput.value = '';
+                            })
+                            .catch(error => {
+                                Swal.close();
+                                console.error(error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal mengirim data',
+                                    text: 'Terjadi kesalahan.',
+                                });
+                                resultInput.value = '';
+                            });
+
+                        html5QrCode.stop().then(() => {
+                            scannerStarted = false;
+                            stopScanBtn.disabled = true;
+                        });
+                    },
+                    (errorMessage) => {
+                        // skip
+                    }
+                ).then(() => {
+                    scannerStarted = true;
+                    stopScanBtn.disabled = false;
+                    readerDiv.classList.remove('hidden'); // ✅ tampilkan reader
+                })
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal membuka kamera',
+                        text: err
                     });
-                },
-                (errorMessage) => {
-                    // Tidak perlu tampilkan kesalahan kecil saat tidak ada QR
-                }
-            ).then(() => {
-                scannerStarted = true;
-                stopScanBtn.disabled = false;
-            }).catch((err) => {
-                readerDiv.style.display = 'none';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal membuka kamera',
-                    text: err
                 });
-            });
         });
 
-        stopScanBtn.addEventListener('click', function() {
+        stopScanBtn.addEventListener('click', () => {
             if (scannerStarted && html5QrCode) {
                 html5QrCode.stop().then(() => {
                     scannerStarted = false;
-                    readerDiv.style.display = 'none';
                     stopScanBtn.disabled = true;
-
                     Swal.fire({
                         icon: 'info',
                         title: 'Kamera dimatikan',
@@ -286,7 +208,6 @@
             }
         });
     </script>
-
 </body>
 
 </html>
