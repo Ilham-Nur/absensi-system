@@ -1,7 +1,10 @@
 @extends('layout.app')
+
 @section('title', 'User')
 
 @section('content')
+
+    <!-- Modal Tambah -->
     <div class="modal fade" id="modalUser" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -65,7 +68,7 @@
                 <div class="modal-body">
                     <form id="formEditUser">
                         @csrf
-                        <input type="hidden" id="editUserId" name="id"> {{-- Add name attribute for form submission --}}
+                        <input type="hidden" id="editUserId" name="id">
                         <div class="form-group mb-3">
                             <label for="editNama">Nama</label>
                             <input type="text" class="form-control" id="editNama" placeholder="Masukan Nama" name="name"
@@ -96,8 +99,10 @@
         </div>
     </div>
 
+
     <section class="section">
         <div class="container-fluid">
+            <!-- ========== title-wrapper start ========== -->
             <div class="title-wrapper pt-30">
                 <div class="row align-items-center">
                     <div class="col-md-6">
@@ -105,48 +110,67 @@
                             <h2>User</h2>
                         </div>
                     </div>
+                    <!-- end col -->
                     <div class="col-md-6">
                         <div class="breadcrumb-wrapper">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item">
-                                        <a href="#">User Management</a> {{-- Changed to be more descriptive --}}
+                                        <a href="#">User Management</a>
                                     </li>
-                                    <li class="breadcrumb-item active" aria-current="page">User</li>
                                 </ol>
                             </nav>
                         </div>
                     </div>
-                    </div>
+                    <!-- end col -->
                 </div>
-
+                <!-- end row -->
+            </div>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card-style mb-30">
                         <div class="d-flex align-items-center mb-3">
                             <h6 class="mb-0">List User</h6>
-                            <button id="btnUser" type="button" class="main-btn primary-btn btn-hover ms-auto"
-                                data-bs-toggle="modal" data-bs-target="#modalUser">
+                            <button type="button" class="main-btn primary-btn btn-hover ms-auto" data-bs-toggle="modal"
+                                id="btnUser" data-bs-target="#modalUser">
                                 Tambah User
                             </button>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table" id="userTable">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Nama</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{-- DataTables will populate this tbody via AJAX --}}
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="table-wrapper table-responsive">
+                            <table class="table" id="userTable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <h6>
+                                                No
+                                            </h6>
+                                        </th>
+                                        <th>
+                                            <h6>
+                                                Nama
+                                            </h6>
+                                        </th>
+                                        <th>
+                                            <h6>
+                                                Email
+                                            </h6>
+                                        </th>
+                                        <th>
+                                            <h6>
+                                                Role
+                                            </h6>
+                                        </th>
+                                        <th>
+                                            <h6>
+                                                Action
+                                            </h6>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{-- DataTables will populate this tbody via AJAX --}}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -174,29 +198,39 @@
                     },
                     {
                         data: 'name',
-                        name: 'name'
+                        name: 'name',
+                        defaultContent: '-'
                     },
                     {
                         data: 'email',
                         name: 'email'
                     },
                     {
-                        data: 'role.name', // Assuming 'role' is a relationship in your User model
+                        data: 'role.name',
                         name: 'role.name',
-                        orderable: false, // Role name might not be directly sortable on the database side
-                        searchable: false // If you want to search by role name, you might need custom server-side logic
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'id',
                         name: 'action',
                         orderable: false,
                         searchable: false,
-                        render: function (data, type, row) {
+                        render: function (data) {
                             return `
-                                <button class="btn btn-sm btn-primary btnEditUser" data-id="${row.id}">Edit</button>
-                                <button class="btn btn-sm btn-danger btnDeleteUser" data-id="${row.id}">Delete</button>
-                                <button class="btn btn-sm btn-secondary btnResetPassword" data-id="${row.id}">Reset Password</button>
-                            `;
+                                      <div class="btn-group" role="group" aria-label="Action Buttons">
+                                        <button class="btn btn-sm btn-primary btnEditUser" data-id="${data}">
+                                        <span class="mdi mdi-square-edit-outline"></span>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger btnDeleteUser" data-id="${data}">
+                                        <span class="mdi mdi-trash-can"></span>
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary btnResetPassword" data-id="${data}"> 
+                                        <span class="mdi mdi-lock-reset"></span>
+                                         </button>
+
+                                     </div>
+                                     `;
                         }
                     }
                 ]
@@ -240,7 +274,7 @@
                             }).then(() => {
                                 $('#modalUser').modal('hide');
                                 form[0].reset();
-                                table.ajax.reload(null, false); 
+                                table.ajax.reload(null, false);
                             });
                         }
                     },
@@ -268,7 +302,7 @@
                 });
             });
 
-          
+
             $(document).on('click', '.btnEditUser', function () {
                 let userId = $(this).data('id');
                 $("#modalEditLabel").text("Edit User");
@@ -278,7 +312,7 @@
 
 
                 $.ajax({
-                    url: `/user/${userId}/edit`, 
+                    url: `/user/${userId}/edit`,
                     type: 'GET',
                     dataType: 'json',
                     success: function (response) {
@@ -317,10 +351,9 @@
                 $.ajax({
                     url: `/user/update/${userId}`,
                     type: "POST",
-                    data: formData,
+                    data: formData + "&_method=PUT",
                     dataType: 'json',
                     beforeSend: function () {
-                        // Clear previous error messages
                         form.find('.invalid-feedback').remove();
                         form.find('.form-control').removeClass('is-invalid');
 

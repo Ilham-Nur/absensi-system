@@ -19,32 +19,47 @@ class UserController extends Controller
         return view('user.indexuser', compact('users', 'roles'));
     }
 
+    // Ganti method store() Anda dengan ini
+
     public function store(Request $request)
     {
-        // Validasi data yang diterima
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+        // Gunakan Validator::make() untuk kontrol penuh
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'name' => 'required|string|unique:users',
+            'email' => 'required|email|unique:users,email', 
             'password' => 'required|min:6|confirmed',
             'role_id' => 'required|exists:roles,id',
         ]);
 
+
+        if ($validator->fails()) {
+
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+
         try {
-            // Buat user baru menggunakan model
             User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
-
                 'role_id' => $request->role_id,
             ]);
 
-            return response()->json(['success' => true]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User berhasil ditambahkan!'
+            ]);
+
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Gagal menambahkan user!'], 500);
+
+            return response()->json([
+                'status' => false, 
+                'message' => 'Gagal menambahkan user!'
+            ], 500);
         }
     }
-
     public function resetPassword($id)
     {
         try {
@@ -61,33 +76,42 @@ class UserController extends Controller
 
     public function edit($id)
     {
+        try {
         $user = User::findOrFail($id);
+
+        
         return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'role_id' => $user->role_id,
+            'status' => true,
+            'data' => $user 
         ]);
+
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        
+        return response()->json([
+            'status' => false,
+            'message' => 'User not found.'
+        ], 404); 
+    }
 
     }
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+$user = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'role_id' => 'required|exists:roles,id',
-        ]);
-        dd($request->all());
+    $validated = $request->validate([
+        // TAMBAHKAN 'unique' dengan pengecualian ID saat ini
+        'name' => 'required|string|max:255|unique:users,name,' . $id,
+        'email' => 'required|email|unique:users,email,' . $id,
+        'role_id' => 'required|exists:roles,id',
+    ]);
 
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-        $user->role_id = $validated['role_id'];
-        $user->save();
+    $user->update($validated);
 
-        return response()->json(['message' => 'User berhasil diperbarui.']);
+    return response()->json([
+        'status' => true,
+        'message' => 'User berhasil diperbarui.'
+    ]);
     }
 
     public function list(Request $request)

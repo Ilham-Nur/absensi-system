@@ -89,9 +89,8 @@
                     <div class="card-style mb-30">
                         <div class="d-flex align-items-center mb-3">
                             <h6 class="mb-0">List Role</h6>
-                            <button type="button" class="main-btn primary-btn btn-hover ms-auto"
-                                style="width: 20px; height: 20px;" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#tambahRoleModal">
+                            <button type="button" class="main-btn primary-btn btn-hover ms-auto" class="btn btn-primary"
+                                data-bs-toggle="modal" data-bs-target="#tambahRoleModal">
                                 Tambah Role
                             </button>
                         </div>
@@ -129,47 +128,47 @@
 @endsection
 @section('script')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             let table = $('#role-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('roles.list') }}",
                 columns: [{
-                        data: null,
-                        name: 'index',
-                        render: function(data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1;
-                        },
-                        orderable: false,
-                        searchable: false
+                    data: null,
+                    name: 'index',
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
                     },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'id',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            return `
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-secondary btn-edit-role" data-id="${data}" data-name="${row.name}">
-                                    <span class="mdi mdi-square-edit-outline"></span>
-                                </button>
-                                <button class="btn btn-sm btn-danger btn-delete-role" data-id="${data}">
-                                    <span class="mdi mdi-trash-can"></span>
-                                </button>
-                            </div>
-                        `;
-                        }
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'name',
+                    name: 'name'
+                },
+                {
+                    data: 'id',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return `
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-secondary btn-edit-role" data-id="${data}" data-name="${row.name}">
+                                        <span class="mdi mdi-square-edit-outline"></span>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btn-delete-role" data-id="${data}">
+                                        <span class="mdi mdi-trash-can"></span>
+                                    </button>
+                                </div>
+                            `;
                     }
+                }
                 ]
             });
 
             // Handle Tambah Role
-            $('#formTambahRole').on('submit', function(e) {
+            $('#formTambahRole').on('submit', function (e) {
                 e.preventDefault();
                 let form = $(this);
                 let formData = form.serialize();
@@ -179,12 +178,12 @@
                     type: 'POST',
                     data: formData,
                     dataType: 'json',
-                    beforeSend: function() {
+                    beforeSend: function () {
                         $(form).find('span.error-text').text('');
                         $(form).find('button[type="submit"]').prop('disabled', true).html(
                             '<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.status) {
                             Swal.fire({
                                 icon: 'success',
@@ -199,10 +198,10 @@
                             });
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         let errors = xhr.responseJSON?.errors;
                         if (errors) {
-                            $.each(errors, function(prefix, val) {
+                            $.each(errors, function (prefix, val) {
                                 $(form).find('span.' + prefix + '_error').text(val[0]);
                             });
                         } else {
@@ -215,7 +214,7 @@
                             });
                         }
                     },
-                    complete: function() {
+                    complete: function () {
                         $(form).find('button[type="submit"]').prop('disabled', false).html(
                             'Simpan');
                     }
@@ -223,7 +222,7 @@
             });
 
             // Handle Edit Role
-            $(document).on('click', '.btn-edit-role', function() {
+            $(document).on('click', '.btn-edit-role', function () {
                 let roleId = $(this).data('id');
                 let roleName = $(this).data('name');
 
@@ -232,7 +231,7 @@
                 $('#editRoleModal').modal('show');
             });
 
-            $('#formEditRole').on('submit', function(e) {
+            $('#formEditRole').on('submit', function (e) {
                 e.preventDefault();
                 let form = $(this);
                 let roleId = $('#editRoleId').val();
@@ -243,12 +242,12 @@
                     type: 'POST',
                     data: formData,
                     dataType: 'json',
-                    beforeSend: function() {
+                    beforeSend: function () {
                         $(form).find('span.error-text').text('');
                         $(form).find('button[type="submit"]').prop('disabled', true).html(
                             '<i class="fas fa-spinner fa-spin"></i> Mengupdate...');
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.status) {
                             Swal.fire({
                                 icon: 'success',
@@ -262,10 +261,10 @@
                             });
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         let errors = xhr.responseJSON?.errors;
                         if (errors) {
-                            $.each(errors, function(prefix, val) {
+                            $.each(errors, function (prefix, val) {
                                 $(form).find('span.' + prefix + '_error').text(val[0]);
                             });
                         } else {
@@ -278,7 +277,7 @@
                             });
                         }
                     },
-                    complete: function() {
+                    complete: function () {
                         $(form).find('button[type="submit"]').prop('disabled', false).html(
                             'Update');
                     }
@@ -286,7 +285,7 @@
             });
 
             // Handle Delete Role
-            $(document).on('click', '.btn-delete-role', function() {
+            $(document).on('click', '.btn-delete-role', function () {
                 let roleId = $(this).data('id');
 
                 Swal.fire({
@@ -307,7 +306,7 @@
                                 _token: "{{ csrf_token() }}"
                             },
                             dataType: 'json',
-                            success: function(response) {
+                            success: function (response) {
                                 if (response.status) {
                                     Swal.fire({
                                         icon: 'success',
@@ -320,7 +319,7 @@
                                     });
                                 }
                             },
-                            error: function(xhr) {
+                            error: function (xhr) {
                                 let msg = xhr.responseJSON?.message ||
                                     'Terjadi kesalahan saat menghapus role.';
                                 Swal.fire({
@@ -335,12 +334,12 @@
             });
 
             // Reset form saat modal ditutup
-            $('#tambahRoleModal').on('hidden.bs.modal', function() {
+            $('#tambahRoleModal').on('hidden.bs.modal', function () {
                 $(this).find('form')[0].reset();
                 $(this).find('span.error-text').text('');
             });
 
-            $('#editRoleModal').on('hidden.bs.modal', function() {
+            $('#editRoleModal').on('hidden.bs.modal', function () {
                 $(this).find('span.error-text').text('');
             });
         });

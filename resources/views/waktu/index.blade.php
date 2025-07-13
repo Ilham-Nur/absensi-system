@@ -104,7 +104,6 @@
 
     <section class="section">
         <div class="container-fluid">
-
             <!-- ========== title-wrapper start ========== -->
             <div class="title-wrapper pt-30">
                 <div class="row align-items-center">
@@ -164,7 +163,6 @@
                                     <!-- DataTables akan mengisi sendiri -->
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div>
@@ -191,7 +189,7 @@
                         searchable: false
                     },
                     {
-                        data: 'status.name', // relasi dari backend
+                        data: 'status.name', 
                         name: 'status.name',
                         defaultContent: '-'
                     },
