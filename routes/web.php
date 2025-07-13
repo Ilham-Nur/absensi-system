@@ -22,6 +22,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.show');
     Route::get('/dashboard/getdataChart', [DashboardController::class, 'getdataChart'])->name('dashboard.getdataChart');
+    Route::get('/dashboard/dataTable', [DashboardController::class, 'dataTable'])->name('dashboard.dataTable');
 
     // user
     Route::prefix('user')->group(function () {

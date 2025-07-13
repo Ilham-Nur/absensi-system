@@ -19,29 +19,35 @@ class HistoryController extends Controller
 
     public function getListHistory(Request $request)
     {
-        $presensi = Presensi::with(['statusPresensi', 'user'])
-            ->get()
-            ->map(function ($item) {
-                // Default badge
-                $badgeClass = 'secondary';
+       $presensi = Presensi::with(['statusPresensi', 'user'])
+        ->get()
+        ->map(function ($item) {
+            // Default badge
+            $badgeClass = 'secondary';
 
-                if ($item->statusPresensi?->id == 1) {
-                    $badgeClass = 'success'; // Hijau
-                } elseif ($item->statusPresensi?->id == 2) {
-                    $badgeClass = 'danger'; // Merah
-                }
+            if ($item->statusPresensi?->id == 1) {
+                $badgeClass = 'success'; // Hijau
+            } elseif ($item->statusPresensi?->id == 2) {
+                $badgeClass = 'danger'; // Merah
+            }
 
-                $typeLabel = $item->statusPresensi->name ?? '-';
-                $typeBadge = '<span class="badge bg-' . $badgeClass . '">' . $typeLabel . '</span>';
+            $typeLabel = $item->statusPresensi->name ?? '-';
+            $typeBadge = '<span class="badge bg-' . $badgeClass . '">' . $typeLabel . '</span>';
 
-                return [
-                    'type' => $typeBadge,
-                    'user' => $item->user->name ?? '-',
-                    'date' => $item->checked_at?->format('H:i d F Y'),
-                    'status' => 'Presensi',
-                    'extra' => $item->location,
-                ];
-            });
+            // Location link ke Google Maps jika ada koordinat
+            $extra = '-';
+            if ($item->location) {
+                $extra = '<a href="https://www.google.com/maps?q=' . $item->location . '" target="_blank">Lihat Lokasi</a>';
+            }
+
+            return [
+                'type' => $typeBadge,
+                'user' => $item->user->name ?? '-',
+                'date' => $item->checked_at?->format('H:i d F Y'),
+                'status' => 'Presensi',
+                'extra' => $extra,
+            ];
+        });
 
         $absensi = Absensi::with('user')
             ->get()
