@@ -44,5 +44,32 @@ class AbsensiController extends Controller
         }
 
     }
+    public function edit($id)
+    {
+        $absensi = Absensi::findOrFail($id);
+        return response()->json($absensi);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'status' => 'required|string|in:Hadir,Tidak Hadir,Sakit,Izin',
+        ]);
+
+        $absensi = Absensi::findOrFail($id);
+        $absensi->update($request->all());
+        return response()->json(['success' => 'Data berhasil diperbarui.']);
+    }
+
+
+    public function destroy($id)
+    {
+        $absensi = Absensi::findOrFail($id);
+        $absensi->delete();
+        return response()->json(['success' => 'Data berhasil dihapus.']);
+
+    }
 
 }

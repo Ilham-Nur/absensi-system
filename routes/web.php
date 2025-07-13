@@ -63,6 +63,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
     Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absensi.store');
     Route::get('/absensi/list', [AbsensiController::class, 'list'])->name('absensi.list');
+    Route::get('/absensi/{id}/edit', [AbsensiController::class, 'edit'])->name('absensi.edit');
+    Route::put('/absensi/update/{id}', [AbsensiController::class, 'update'])->name('absensi.update');
+    Route::delete('/absensi/delete/{id}', [AbsensiController::class, 'destroy'])->name('absensi.delete');
 });
 
 
